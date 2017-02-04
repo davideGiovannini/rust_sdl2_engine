@@ -7,6 +7,8 @@ use sdl2::event::Event;
 // use sdl2::ttf;
 
 use sdl2::mixer::INIT_OGG;
+use std::collections::HashSet;
+use sdl2::keyboard::Scancode;
 
 mod fps_counter;
 mod context;
@@ -80,6 +82,9 @@ impl<'window, G: Game> Engine<'window, G> {
     pub fn game_loop(&mut self) {
         self.game.set_up();
 
+
+        let mut keys_down: HashSet<Scancode> = Default::default();
+
         'running: loop {
 
             let (should_wait, maybe_fps) = self.fps_counter.tick(&mut self.timer_subsystem);
@@ -101,10 +106,16 @@ impl<'window, G: Game> Engine<'window, G> {
                     _ => {}
                 }
             }
+            // LOGIC
+            let keys_snapshot = self.event_pump
+                .keyboard_state()
+                .pressed_scancodes()
+                .collect();
+            let newly_pressed = &keys_snapshot - &keys_down;
+            keys_down.clone_from(&keys_snapshot);
 
-            let keys_snapshot = self.event_pump.keyboard_state().pressed_scancodes().collect();
-
-            self.game.logic(EngineContext { keyboard_pressed: keys_snapshot });
+            let context = EngineContext::new(keys_snapshot, newly_pressed);
+            self.game.logic(context);
 
             // RENDERING
             self.renderer.set_draw_color(Color::RGB(0, 0, 0));
