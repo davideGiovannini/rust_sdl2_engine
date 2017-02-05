@@ -128,3 +128,9 @@ impl<'window, G: Game> Engine<'window, G> {
         }
     }
 }
+
+impl <'window, G: Game>Drop for Engine<'window, G>{
+    fn drop(&mut self){
+        sdl2::mixer::close_audio();
+    }
+}
