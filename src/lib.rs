@@ -4,7 +4,6 @@ use sdl2::image::INIT_PNG; // INIT_JPG
 
 use sdl2::pixels::Color;
 use sdl2::event::Event;
-// use sdl2::ttf;
 
 use sdl2::mixer::INIT_OGG;
 use std::collections::HashSet;
@@ -37,7 +36,7 @@ impl<'window, G: Game> Engine<'window, G> {
         let sdl_context = sdl2::init().unwrap();
         let _image_context = sdl2::image::init(INIT_PNG).unwrap();
         let video_subsystem = sdl_context.video().unwrap();
-        // let ttf_context = sdl2::ttf::init().unwrap();
+        let ttf_context = sdl2::ttf::init().unwrap();
         let mut timer = sdl_context.timer().unwrap();
 
         let _mixer_context = sdl2::mixer::init(INIT_OGG);
@@ -66,7 +65,7 @@ impl<'window, G: Game> Engine<'window, G> {
 
         let event_pump = sdl_context.event_pump().unwrap();
         let fps_counter = FpsCounter::new(&mut timer);
-        let game = Box::new(Game::init(&renderer));
+        let game = Box::new(Game::init(&renderer, &ttf_context));
 
         Engine {
             window_title: window_title,
