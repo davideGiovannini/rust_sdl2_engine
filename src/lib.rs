@@ -65,7 +65,7 @@ impl<'window, G: Game> Engine<'window, G> {
 
         let event_pump = sdl_context.event_pump().unwrap();
         let fps_counter = FpsCounter::new(&mut timer);
-        let game = Box::new(Game::init(&renderer, &ttf_context));
+        let game = Box::new(Game::init(&renderer, ttf_context));
 
         Engine {
             window_title: window_title,
