@@ -1,4 +1,5 @@
 extern crate sdl2;
+extern crate sdl2_sys;
 
 use sdl2::image::INIT_PNG; // INIT_JPG
 
@@ -12,6 +13,7 @@ use sdl2::keyboard::Scancode;
 mod fps_counter;
 mod context;
 mod game;
+mod game_controllers;
 pub mod math;
 pub use game::Game;
 
@@ -24,6 +26,7 @@ pub const LOGICAL_SIZE: (u32, u32) = (420, 340);
 pub struct Engine<'window, G: Game> {
     window_title: &'window str,
     timer_subsystem: sdl2::TimerSubsystem,
+    game_controller_manager: game_controllers::GameControllerManager,
     renderer: sdl2::render::Renderer<'window>,
     event_pump: sdl2::EventPump,
     fps_counter: FpsCounter,
@@ -38,6 +41,8 @@ impl<'window, G: Game> Engine<'window, G> {
         let video_subsystem = sdl_context.video().unwrap();
         let ttf_context = sdl2::ttf::init().unwrap();
         let mut timer = sdl_context.timer().unwrap();
+
+
 
         let _mixer_context = sdl2::mixer::init(INIT_OGG);
         sdl2::mixer::open_audio(44100, sdl2::mixer::AUDIO_S16LSB, 2, 1024).unwrap();
@@ -67,10 +72,12 @@ impl<'window, G: Game> Engine<'window, G> {
         let fps_counter = FpsCounter::new(&mut timer);
         let game = Box::new(Game::init(&renderer, ttf_context));
 
+
         Engine {
             window_title: window_title,
             timer_subsystem: timer,
             renderer: renderer,
+            game_controller_manager: game_controllers::GameControllerManager::new(),
             event_pump: event_pump,
             fps_counter: fps_counter,
             game: game,
@@ -101,7 +108,19 @@ impl<'window, G: Game> Engine<'window, G> {
                 use sdl2::keyboard::Keycode::*;
                 match event {
                     Event::Quit { .. } => break 'running,
+                    Event::ControllerDeviceAdded { which, .. } => {
+                        self.game_controller_manager.added_controller(which)
+                    }
+                    Event::ControllerDeviceRemoved { which, .. } => {
+                        self.game_controller_manager.removed_controller(which)
+                    }
+                    Event::ControllerButtonDown { which, .. } => {
+                        println!("Instance id {:?}", which)
+                    }
                     Event::KeyDown { keycode: Some(Escape), .. } => break 'running,
+                    Event::KeyDown { keycode: Some(Space), .. } => {
+                        println!("Game Controllers {:#?}", self.game_controller_manager)
+                    }
                     _ => {}
                 }
             }
@@ -113,7 +132,9 @@ impl<'window, G: Game> Engine<'window, G> {
             let newly_pressed = &keys_snapshot - &keys_down;
             keys_down.clone_from(&keys_snapshot);
 
-            let context = EngineContext::new(keys_snapshot, newly_pressed);
+            let context = EngineContext::new(keys_snapshot,
+                                             newly_pressed,
+                                             self.game_controller_manager.snapshot());
             self.game.logic(context);
 
             // RENDERING
@@ -128,8 +149,8 @@ impl<'window, G: Game> Engine<'window, G> {
     }
 }
 
-impl <'window, G: Game>Drop for Engine<'window, G>{
-    fn drop(&mut self){
+impl<'window, G: Game> Drop for Engine<'window, G> {
+    fn drop(&mut self) {
         sdl2::mixer::close_audio();
     }
 }

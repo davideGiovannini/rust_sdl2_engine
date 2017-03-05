@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Davide Giovannini <giovannini.davide90@gmail.com>"]
 
 [dependencies]
+sdl2-sys = "*"
 
 [dependencies.sdl2]
 version = "0.28"
