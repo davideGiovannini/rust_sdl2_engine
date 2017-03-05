@@ -17,6 +17,7 @@ pub struct GameController {
 impl GameController {
     pub fn from_joystick_index(index: i32) -> Option<GameController> {
         return unsafe {
+            let joystick = SDL_JoystickOpen(index);
             if SDL_IsGameController(index) != 0 {
                 let controller = SDL_GameControllerOpen(index);
                 if controller.is_null() {
@@ -46,7 +47,7 @@ impl GameController {
         self.joystick_id
     }
 
-    pub fn rumble_play(&self, strenght: f32, duration: u32) {
+    pub fn play_rumble(&self, strenght: f32, duration: u32) {
         if let Some(ref haptic) = self.haptic {
             haptic.play(strenght, duration)
         }

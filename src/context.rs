@@ -7,7 +7,7 @@ use super::game_controllers::GameController;
 pub struct EngineContext {
     keyboard_down: HashSet<Scancode>,
     keyboard_pressed: HashSet<Scancode>,
-    controllers: HashMap<i32, GameController>
+    pub controllers: HashMap<i32, GameController>
 }
 
 impl EngineContext {
