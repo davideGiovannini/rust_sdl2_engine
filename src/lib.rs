@@ -16,6 +16,7 @@ mod game;
 mod game_controllers;
 pub mod math;
 pub use game::Game;
+pub use game_controllers::GameController;
 
 pub use self::context::EngineContext;
 use self::fps_counter::FpsCounter;
