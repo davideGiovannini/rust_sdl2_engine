@@ -7,15 +7,18 @@ use super::game_controllers::GameController;
 pub struct EngineContext {
     keyboard_down: HashSet<Scancode>,
     keyboard_pressed: HashSet<Scancode>,
-    pub controllers: HashMap<i32, GameController>
+    pub controllers: HashMap<i32, GameController>,
 }
 
 impl EngineContext {
-    pub fn new(keys_down: HashSet<Scancode>, keys_pressed: HashSet<Scancode>, controllers: HashMap<i32, GameController>) -> EngineContext {
+    pub fn new(keys_down: HashSet<Scancode>,
+               keys_pressed: HashSet<Scancode>,
+               controllers: HashMap<i32, GameController>)
+               -> EngineContext {
         EngineContext {
             keyboard_down: keys_down,
             keyboard_pressed: keys_pressed,
-            controllers: controllers
+            controllers: controllers,
         }
     }
     pub fn is_key_down(&self, scancode: Scancode) -> bool {
