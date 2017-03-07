@@ -1,5 +1,6 @@
 extern crate sdl2;
 extern crate sdl2_sys;
+extern crate specs;
 
 use sdl2::image::INIT_PNG; // INIT_JPG
 
@@ -14,6 +15,10 @@ mod fps_counter;
 mod context;
 mod game;
 mod game_controllers;
+
+#[macro_use]
+mod common_macros;
+
 pub mod math;
 pub use game::Game;
 pub use game_controllers::{GameControllerManager, GameController};
