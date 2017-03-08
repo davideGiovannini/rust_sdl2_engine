@@ -30,6 +30,7 @@ impl GameControllerManager {
                     map.insert(joystick_index, controller);
                 }
             }
+            #[cfg(debug_assertions)]
             println!("map {:#?}", map);
             map
         }

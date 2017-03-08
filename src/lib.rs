@@ -1,6 +1,7 @@
 extern crate sdl2;
 extern crate sdl2_sys;
 extern crate specs;
+extern crate gl;
 
 use sdl2::image::INIT_PNG; // INIT_JPG
 
@@ -15,9 +16,13 @@ mod fps_counter;
 mod context;
 mod game;
 mod game_controllers;
+mod opengl;
 
 #[macro_use]
 mod common_macros;
+
+mod post_processing;
+pub use post_processing::PostProcessEffect as PostProcessingEffect;
 
 pub mod math;
 pub use game::Game;
@@ -81,13 +86,30 @@ impl<'window> Engine<'window> {
             .build()
             .unwrap();
 
-
         let mut renderer = window.renderer()
             .accelerated()
+            .index(opengl::find_sdl_gl_driver().unwrap())
             .target_texture()
             .build()
             .unwrap();
 
+        let gl_attr = video_subsystem.gl_attr();
+        gl_attr.set_context_profile(sdl2::video::GLProfile::Core);
+        // Set the context into debug mode
+        #[cfg(debug_assertions)]
+        gl_attr.set_context_flags().debug().set();
+        // Set the OpenGL context version (OpenGL 3.1)
+        gl_attr.set_context_version(3, 1);
+
+
+        gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
+        renderer.window().unwrap().gl_set_context_to_current().unwrap();
+
+        #[cfg(debug_assertions)]
+        println!("Opengl {}.{} version {:#?}",
+                 gl_attr.context_major_version(),
+                 gl_attr.context_minor_version(),
+                 gl_attr.context_profile());
 
         if let Some((width, height)) = self.logical_size {
             renderer.set_logical_size(width, height).unwrap();
@@ -107,6 +129,7 @@ impl<'window> Engine<'window> {
         let mut keys_down: HashSet<Scancode> = Default::default();
 
         let clear_color = self.clear_color.unwrap_or(CLEAR_COLOR);
+
 
         'running: loop {
 
@@ -131,10 +154,12 @@ impl<'window> Engine<'window> {
                         game_controller_manager.removed_controller(which)
                     }
                     Event::ControllerButtonDown { which, .. } => {
+                        #[cfg(debug_assertions)]
                         println!("Instance id {:?}", which)
                     }
                     Event::KeyDown { keycode: Some(Escape), .. } => break 'running,
                     Event::KeyDown { keycode: Some(F11), .. } => {
+                        #[cfg(debug_assertions)]
                         println!("Game Controllers {:#?}", game_controller_manager)
                     }
                     _ => {}
