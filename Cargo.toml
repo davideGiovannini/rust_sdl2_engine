@@ -2,6 +2,8 @@
 name = "sdl2_engine"
 version = "0.1.0"
 authors = ["Davide Giovannini <giovannini.davide90@gmail.com>"]
+build = "build.rs"
+
 
 [dependencies]
 sdl2-sys = "*"
