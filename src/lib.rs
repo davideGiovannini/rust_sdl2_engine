@@ -17,6 +17,7 @@ mod context;
 mod game;
 mod game_controllers;
 mod opengl;
+mod action;
 
 #[macro_use]
 mod common_macros;
@@ -29,6 +30,7 @@ pub use game::Game;
 pub use game_controllers::{GameControllerManager, GameController};
 
 pub use self::context::EngineContext;
+pub use self::action::EngineAction;
 use self::fps_counter::FpsCounter;
 
 pub const WINDOW_SIZE: (u32, u32) = (800, 600);
@@ -38,6 +40,7 @@ pub struct Engine<'window> {
     window_title: &'window str,
     window_size: Option<(u32, u32)>,
     logical_size: Option<(u32, u32)>,
+    fullscreen: bool,
     clear_color: Option<Color>,
 }
 
@@ -49,21 +52,27 @@ impl<'window> Engine<'window> {
             window_size: None,
             logical_size: None,
             clear_color: None,
+            fullscreen: false
         }
     }
 
-    pub fn with_window_size(mut self, width: u32, height: u32) -> Self {
+    pub fn with_window_size(&mut self, width: u32, height: u32) -> &mut Self {
         self.window_size = Some((width, height));
         self
     }
 
-    pub fn with_logical_size(mut self, width: u32, height: u32) -> Self {
+    pub fn with_logical_size(&mut self, width: u32, height: u32) -> &mut Self {
         self.logical_size = Some((width, height));
         self
     }
 
-    pub fn with_clear_color(mut self, color: Color) -> Self{
+    pub fn with_clear_color(&mut self, color: Color) -> &mut Self{
         self.clear_color = Some(color);
+        self
+    }
+
+    pub fn with_fullscreen(&mut self, fullscreen: bool) -> &mut Self{
+        self.fullscreen = fullscreen;
         self
     }
 
@@ -79,12 +88,18 @@ impl<'window> Engine<'window> {
 
         let _mixer_context = Engine::init_sdl_mixer();
 
-        let window = video_subsystem.window(self.window_title, width, height)
+
+        let mut window_builder = video_subsystem.window(self.window_title, width, height);
+        window_builder
             .position_centered()
             .opengl()
-            .resizable()
-            .build()
-            .unwrap();
+            .resizable();
+
+        if self.fullscreen{
+            window_builder.fullscreen_desktop();
+        }
+
+        let window = window_builder.build().unwrap();
 
         let mut renderer = window.renderer()
             .accelerated()
@@ -130,7 +145,6 @@ impl<'window> Engine<'window> {
 
         let clear_color = self.clear_color.unwrap_or(CLEAR_COLOR);
 
-
         'running: loop {
 
             let (should_wait, maybe_fps) = fps_counter.tick(&mut timer_subsystem);
@@ -157,7 +171,6 @@ impl<'window> Engine<'window> {
                         #[cfg(debug_assertions)]
                         println!("Instance id {:?}", which)
                     }
-                    Event::KeyDown { keycode: Some(Escape), .. } => break 'running,
                     Event::KeyDown { keycode: Some(F11), .. } => {
                         #[cfg(debug_assertions)]
                         println!("Game Controllers {:#?}", game_controller_manager)
@@ -175,7 +188,18 @@ impl<'window> Engine<'window> {
             let context = EngineContext::new(keys_snapshot,
                                              newly_pressed,
                                              game_controller_manager.snapshot());
-            game.logic(context);
+            let action = game.logic(context);
+            match action {
+                EngineAction::Quit => break 'running,
+                EngineAction::ToggleFullScreen => {
+                    use sdl2::video::FullscreenType;
+                    let mut window = renderer.window_mut().unwrap();
+                    let status = if self.fullscreen {FullscreenType::Off} else {FullscreenType::Desktop};
+                    window.set_fullscreen(status).unwrap();
+                    self.fullscreen = !self.fullscreen;
+                }
+                _ => {}
+            }
 
             // RENDERING
             renderer.set_draw_color(clear_color);
