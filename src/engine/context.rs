@@ -1,7 +1,7 @@
 use sdl2::keyboard::Scancode;
 use std::collections::{HashMap, HashSet};
 
-use super::game_controllers::GameController;
+use game_controllers::GameController;
 
 #[derive(Clone)]
 pub struct EngineContext {
