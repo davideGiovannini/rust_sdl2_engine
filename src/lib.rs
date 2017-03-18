@@ -175,7 +175,7 @@ impl<'window> Engine<'window> {
                         #[cfg(debug_assertions)]
                         println!("Game Controllers {:#?}", game_controller_manager)
                     }
-                    _ => {}
+                    _ => {game.process_event(&event);}
                 }
             }
             // LOGIC
