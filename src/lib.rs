@@ -18,7 +18,7 @@ mod common_macros;
 pub use post_processing::PostProcessEffect as PostProcessingEffect;
 
 pub mod math;
-pub use engine::game::Game;
+pub use engine::game::{AnyGameScene, GameScene};
 pub use game_controllers::{GameControllerManager, GameController};
 
 pub use engine::context::EngineContext;
@@ -71,7 +71,7 @@ impl<'window> EngineBuilder<'window> {
         self
     }
 
-    pub fn start<G: Game>(&mut self) {
-        engine::run_engine::<G>(self)
+    pub fn start(&mut self, initial_scene: fn(&Engine) -> AnyGameScene) {
+        engine::run_engine(self, initial_scene)
     }
 }

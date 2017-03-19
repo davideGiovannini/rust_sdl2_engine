@@ -11,7 +11,7 @@ use std::collections::HashSet;
 use sdl2::keyboard::Scancode;
 use sdl2::{EventPump, TimerSubsystem};
 
-use {EngineBuilder, EngineAction, EngineContext, Game};
+use {EngineBuilder, EngineAction, EngineContext, AnyGameScene};
 
 use fps_counter::FpsCounter;
 use game_controllers::GameControllerManager;
@@ -27,7 +27,7 @@ pub struct Engine<'window> {
 }
 
 
-pub fn run_engine<G: Game>(options: &mut EngineBuilder) {
+pub fn run_engine(options: &mut EngineBuilder, initial_scene: fn(&Engine)-> AnyGameScene) {
     let (width, height) = options.window_size;
 
     let mut engine = sdl2_utils::initialize_engine(options.window_title,
@@ -40,9 +40,11 @@ pub fn run_engine<G: Game>(options: &mut EngineBuilder) {
 
     let mut game_controller_manager = GameControllerManager::new();
 
-    let mut game: Box<G> = Box::new(Game::init(&engine));
+    let mut game = initial_scene(&engine);
 
     game.set_up();
+
+    let mut game_stack = vec![game];
 
     let mut keys_down: HashSet<Scancode> = Default::default();
 
@@ -75,7 +77,7 @@ pub fn run_engine<G: Game>(options: &mut EngineBuilder) {
                     println!("Game Controllers {:#?}", game_controller_manager)
                 }
                 _ => {
-                    game.process_event(&event);
+                    game_stack.last_mut().unwrap().process_event(&event);
                 }
             }
         }
@@ -87,7 +89,7 @@ pub fn run_engine<G: Game>(options: &mut EngineBuilder) {
         let context = EngineContext::new(keys_snapshot,
                                          newly_pressed,
                                          game_controller_manager.snapshot());
-        let action = game.logic(context);
+        let action = game_stack.last_mut().unwrap().logic(context);
         match action {
             EngineAction::Quit => break 'running,
             EngineAction::ToggleFullScreen => {
@@ -101,6 +103,29 @@ pub fn run_engine<G: Game>(options: &mut EngineBuilder) {
                 window.set_fullscreen(status).unwrap();
                 options.fullscreen = !options.fullscreen;
             }
+            EngineAction::PopScene => {
+                    drop(game_stack.pop());
+                    if let Some(scene) = game_stack.last_mut(){
+                        scene.on_resume();
+                        continue 'running
+                    }else{
+                        break 'running
+                    }
+            }
+            EngineAction::PushScene(mut get_scene) => {
+                game_stack.last_mut().unwrap().on_pause();
+                let mut next_scene = get_scene(&engine);
+                next_scene.set_up();
+                game_stack.push(next_scene);
+                continue 'running
+            }
+            EngineAction::SwitchToScene(mut get_scene) => {
+                drop(game_stack.pop());
+                let mut next_scene = get_scene(&engine);
+                next_scene.set_up();
+                game_stack.push(next_scene);
+                continue 'running
+            }
             _ => {}
         }
 
@@ -108,7 +133,7 @@ pub fn run_engine<G: Game>(options: &mut EngineBuilder) {
         engine.renderer.set_draw_color(clear_color);
         engine.renderer.clear();
 
-        game.render(&mut engine);
+        game_stack.last_mut().unwrap().render(&mut engine);
 
         engine.renderer.present();
     }
