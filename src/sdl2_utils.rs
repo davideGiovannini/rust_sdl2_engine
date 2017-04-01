@@ -83,3 +83,16 @@ fn init_sdl_mixer() -> sdl2::mixer::Sdl2MixerContext {
     sdl2::mixer::allocate_channels(32);
     _mixer_context
 }
+
+
+pub fn log_system_info() -> String {
+    format!(r#"System info:
+  SDL2 [{}]
+  SDL2 image [{}]
+  SDL2 mixer [{}]
+  SDL2 ttf [{}]"#,
+            sdl2::version::version(),
+            sdl2::image::get_linked_version(),
+            sdl2::mixer::get_linked_version(),
+            sdl2::ttf::get_linked_version())
+}
