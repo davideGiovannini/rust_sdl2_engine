@@ -7,7 +7,6 @@ build = "build.rs"
 
 [dependencies]
 sdl2-sys = "*"
-specs = "*"
 gl = "0.6.0"
 
 [dependencies.sdl2]

@@ -1,6 +1,5 @@
 extern crate sdl2;
 extern crate sdl2_sys;
-extern crate specs;
 extern crate gl;
 
 use sdl2::pixels::Color;
