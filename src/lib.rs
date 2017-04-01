@@ -24,6 +24,7 @@ pub use engine::context::EngineContext;
 pub use engine::action::EngineAction;
 pub use engine::Engine;
 
+pub use sdl2_utils::log_system_info;
 
 const WINDOW_SIZE: (u32, u32) = (800, 600);
 const CLEAR_COLOR: Color = Color::RGB(0, 0, 0);
