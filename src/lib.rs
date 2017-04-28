@@ -40,7 +40,7 @@ pub struct EngineBuilder<'window> {
 impl <'window>Engine<'window>{
     pub fn new(window_title: &str) -> EngineBuilder {
         EngineBuilder {
-            window_title: window_title,
+            window_title,
             window_size: WINDOW_SIZE,
             logical_size: None,
             clear_color: CLEAR_COLOR,

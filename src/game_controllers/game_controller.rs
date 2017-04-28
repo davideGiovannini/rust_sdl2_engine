@@ -34,7 +34,7 @@ impl GameController {
                         raw_game_controller: controller,
                         raw_joystick: joystick,
                         joystick_id: SDL_JoystickInstanceID(joystick),
-                        haptic: haptic,
+                        haptic,
                     })
                 }
             } else {

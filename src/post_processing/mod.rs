@@ -63,10 +63,10 @@ void main() {
             let v_uv = VertexAttribArray::new("v_uv", program);
 
             return Ok(PostProcessEffect {
-                program: program,
+                program,
                 vertex_data: g_vbo,
-                v_position: v_position,
-                v_uv: v_uv,
+                v_position,
+                v_uv,
             });
         }
     }

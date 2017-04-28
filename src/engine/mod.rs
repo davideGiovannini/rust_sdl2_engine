@@ -149,9 +149,9 @@ pub fn make_engine<'window>(renderer: Renderer<'window>,
                             event_pump: EventPump)
                             -> Engine<'window> {
     Engine {
-        renderer: renderer,
-        ttf_context: ttf_context,
-        timer_subsystem: timer_subsystem,
-        event_pump: event_pump,
+        renderer,
+        ttf_context,
+        timer_subsystem,
+        event_pump,
     }
 }
