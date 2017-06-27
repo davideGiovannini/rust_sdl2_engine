@@ -12,7 +12,7 @@ pub struct GameControllerManager {
 impl GameControllerManager {
     pub fn new() -> GameControllerManager {
         unsafe {
-            use sdl2_sys as ll;
+            use sdl2::sys as ll;
             ll::SDL_InitSubSystem(ll::SDL_INIT_GAMECONTROLLER | ll::SDL_INIT_HAPTIC);
         };
         GameControllerManager { controllers: GameControllerManager::load_all_connected_devices() }
@@ -20,7 +20,7 @@ impl GameControllerManager {
 
     fn load_all_connected_devices() -> HashMap<i32, GameController> {
         unsafe {
-            use sdl2_sys::joystick::*;
+            use sdl2::sys::joystick::*;
             let num_joysticks = SDL_NumJoysticks();
 
             let mut map = HashMap::with_capacity(num_joysticks as usize);

@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 
 use game_controllers::GameController;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct EngineContext {
     keyboard_down: HashSet<Scancode>,
     keyboard_pressed: HashSet<Scancode>,

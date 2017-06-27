@@ -1,8 +1,8 @@
 #![allow(unused)]
 
-use sdl2_sys::controller::*;
-use sdl2_sys::joystick::*;
-use sdl2_sys::haptic::*;
+use sdl2::sys::controller::*;
+use sdl2::sys::joystick::*;
+use sdl2::sys::haptic::*;
 
 use sdl2::controller::{Axis, Button};
 
@@ -71,7 +71,9 @@ impl GameController {
 unsafe impl Send for GameController {
     // TODO make sure this does not cause problems
 }
-
+unsafe impl Sync for GameController {
+    // TODO make sure this does not cause problems
+}
 #[derive(Clone, Debug)]
 struct Haptic {
     raw: *mut SDL_Haptic,
@@ -81,7 +83,7 @@ struct Haptic {
 impl Haptic {
     fn from_joystick(joystick: *mut SDL_Joystick) -> Haptic {
         unsafe {
-            use sdl2_sys::haptic::*;
+            use sdl2::sys::haptic::*;
 
             let haptic = SDL_HapticOpenFromJoystick(joystick);
             SDL_HapticRumbleInit(haptic);
@@ -92,7 +94,7 @@ impl Haptic {
 
     fn play(&self, strenght: f32, duration: u32) {
         unsafe {
-            use sdl2_sys::haptic::*;
+            use sdl2::sys::haptic::*;
             SDL_HapticRumblePlay(self.raw, strenght, duration)
         };
     }
@@ -100,8 +102,8 @@ impl Haptic {
 
 pub fn close_controller(controller: GameController) {
     unsafe {
-        use sdl2_sys::joystick::*;
-        use sdl2_sys::haptic::*;
+        use sdl2::sys::joystick::*;
+        use sdl2::sys::haptic::*;
 
         if let Some(haptic) = controller.haptic {
             SDL_HapticClose(haptic.raw);

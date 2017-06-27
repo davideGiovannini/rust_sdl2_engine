@@ -1,5 +1,4 @@
-extern crate sdl2;
-extern crate sdl2_sys;
+pub extern crate sdl2;
 extern crate gl;
 
 use sdl2::pixels::Color;
@@ -27,7 +26,7 @@ pub use engine::Engine;
 pub use sdl2_utils::log_system_info;
 
 const WINDOW_SIZE: (u32, u32) = (800, 600);
-const CLEAR_COLOR: Color = Color::RGB(0, 0, 0);
+const CLEAR_COLOR: Color = Color{r: 0, g: 0, b: 0, a: 255};
 
 pub struct EngineBuilder<'window> {
     window_title: &'window str,
@@ -37,7 +36,7 @@ pub struct EngineBuilder<'window> {
     clear_color: Color,
 }
 
-impl <'window>Engine<'window>{
+impl Engine {
     pub fn new(window_title: &str) -> EngineBuilder {
         EngineBuilder {
             window_title,

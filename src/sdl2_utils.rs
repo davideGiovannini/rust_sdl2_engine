@@ -34,7 +34,7 @@ pub fn initialize_engine(window_title: &str,
 
     let window = window_builder.build().unwrap();
 
-    let mut renderer = window.renderer()
+    let mut renderer = window.into_canvas()
         .accelerated()
         .index(opengl::find_sdl_gl_driver().unwrap())
         .target_texture()
@@ -52,7 +52,6 @@ pub fn initialize_engine(window_title: &str,
 
     gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
     renderer.window()
-        .unwrap()
         .gl_set_context_to_current()
         .unwrap();
 
