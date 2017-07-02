@@ -74,3 +74,10 @@ impl<'window> EngineBuilder<'window> {
         engine::run_engine(self, initial_scene)
     }
 }
+
+
+// RE-EXPORTS
+
+pub mod keyboard{
+    pub use sdl2::keyboard::Scancode;
+}

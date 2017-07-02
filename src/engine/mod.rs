@@ -63,7 +63,6 @@ pub fn run_engine(options: &mut EngineBuilder, initial_scene: fn(&Engine)-> AnyG
         }
         // EVENT HANDLING
         for event in engine.event_pump.poll_iter() {
-            use sdl2::keyboard::Keycode::*;
             match event {
                 Event::Quit { .. } => break 'running,
                 Event::ControllerDeviceAdded { which, .. } => {
@@ -71,10 +70,6 @@ pub fn run_engine(options: &mut EngineBuilder, initial_scene: fn(&Engine)-> AnyG
                 }
                 Event::ControllerDeviceRemoved { which, .. } => {
                     game_controller_manager.removed_controller(which)
-                }
-                Event::ControllerButtonDown { which, .. } => println!("Instance id {:?}", which),
-                Event::KeyDown { keycode: Some(F11), .. } => {
-                    println!("Game Controllers {:#?}", game_controller_manager)
                 }
                 _ => {
                     game_stack.last_mut().unwrap().process_event(&event);
