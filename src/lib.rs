@@ -25,6 +25,8 @@ pub use engine::Engine;
 
 pub use sdl2_utils::log_system_info;
 
+pub mod resources;
+
 const WINDOW_SIZE: (u32, u32) = (800, 600);
 const CLEAR_COLOR: Color = Color{r: 0, g: 0, b: 0, a: 255};
 

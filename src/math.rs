@@ -1,6 +1,6 @@
 // Precise method, which guarantees v = v1 when t = 1.
 pub fn lerp(v0: i32, v1: i32, t: f32) -> i32 {
-    return ((1.0 - t) * v0 as f32 + t * v1 as f32) as i32;
+    ((1.0 - t) * v0 as f32 + t * v1 as f32) as i32
 }
 
 

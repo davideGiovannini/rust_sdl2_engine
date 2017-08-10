@@ -20,7 +20,7 @@ pub unsafe fn compile_program(vertex_shader: GLuint,
     if program_success != gl::TRUE as i32 {
         return Err(format!("Error linking program {}!\n", program));
     }
-    return Ok(program);
+    Ok(program)
 }
 
 pub unsafe fn create_shader(source: &ffi::CString, shader_type: GLuint) -> Result<GLuint, String> {
@@ -40,7 +40,7 @@ pub unsafe fn create_shader(source: &ffi::CString, shader_type: GLuint) -> Resul
                            source,
                            print_shader_log(shader)));
     }
-    return Ok(shader);
+    Ok(shader)
 }
 
 unsafe fn print_shader_log(shader: GLuint) -> String {

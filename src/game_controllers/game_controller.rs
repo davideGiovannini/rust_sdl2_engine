@@ -16,7 +16,7 @@ pub struct GameController {
 
 impl GameController {
     pub fn from_joystick_index(index: i32) -> Option<GameController> {
-        return unsafe {
+        unsafe {
             let joystick = SDL_JoystickOpen(index);
             if SDL_IsGameController(index) != 0 {
                 let controller = SDL_GameControllerOpen(index);
@@ -40,7 +40,7 @@ impl GameController {
             } else {
                 None
             }
-        };
+        }
     }
 
     pub fn instance_id(&self) -> i32 {

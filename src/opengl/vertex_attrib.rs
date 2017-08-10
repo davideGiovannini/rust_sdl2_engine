@@ -15,7 +15,7 @@ impl VertexAttribArray {
         let name = ffi::CString::new(name.as_bytes()).unwrap();
         let loc = gl::GetAttribLocation(shader, name.as_ptr()) as u32; // TODO CHECK
 
-        return VertexAttribArray { loc };
+        VertexAttribArray { loc }
     }
 
     pub unsafe fn enable(&self) {

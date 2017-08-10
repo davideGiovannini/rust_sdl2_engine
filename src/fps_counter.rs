@@ -9,7 +9,7 @@ pub struct FpsCounter {
 }
 
 impl FpsCounter {
-    pub fn new(ref mut timer: &mut TimerSubsystem) -> FpsCounter {
+    pub fn new(timer: &mut TimerSubsystem) -> FpsCounter {
         FpsCounter {
             before: timer.ticks(),
             last_second: timer.ticks(),
@@ -19,7 +19,7 @@ impl FpsCounter {
     /// Returns a (bool, Option<u16>) which indicates respectively
     /// (shouldJumpAtBeginningOfLoop, Option<CurrentFPS>)
     ///
-    pub fn tick(&mut self, ref mut timer: &mut TimerSubsystem) -> (bool, Option<u16>) {
+    pub fn tick(&mut self, timer: &mut TimerSubsystem) -> (bool, Option<u16>) {
         // Frame timing (bis)
         let now = timer.ticks();
         let dt = now - self.before; //expressed in milliseconds
@@ -40,6 +40,6 @@ impl FpsCounter {
             self.fps = 0;
             return (false, Some(fps));
         }
-        return (false, None);
+        (false, None)
     }
 }

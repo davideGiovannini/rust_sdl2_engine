@@ -67,7 +67,9 @@ pub fn initialize_engine(window_title: &str,
 
     let event_pump = sdl_context.event_pump().unwrap();
 
-    make_engine(renderer, ttf_context, timer_subsystem, event_pump)
+    let texture_creator = renderer.texture_creator();
+
+    make_engine(renderer, texture_creator, ttf_context, timer_subsystem, event_pump)
 }
 
 
@@ -78,7 +80,7 @@ pub fn initialize_engine(window_title: &str,
 #[inline]
 fn init_sdl_mixer() -> sdl2::mixer::Sdl2MixerContext {
     let _mixer_context = sdl2::mixer::init(INIT_OGG).unwrap();
-    sdl2::mixer::open_audio(44100, sdl2::mixer::AUDIO_S16LSB, 2, 1024).unwrap();
+    sdl2::mixer::open_audio(44_100, sdl2::mixer::AUDIO_S16LSB, 2, 1024).unwrap();
     sdl2::mixer::allocate_channels(32);
     _mixer_context
 }

@@ -2,6 +2,11 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
+    copy_runtimes_libs();
+    generate_atlas_struct();
+}
+
+fn copy_runtimes_libs(){
     let target = env::var("TARGET").unwrap();
     let mut out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
     let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
@@ -25,9 +30,74 @@ fn main() {
             let mut new_file_path = out_dir.clone();
             if let Some(file_name) = file_name_result {
                 new_file_path.push(file_name.to_str().unwrap());
-                std::fs::copy(&entry_path, new_file_path.as_path())
-                    .expect("Can't copy from DLL dir");
+                std::fs::copy(&entry_path, new_file_path.as_path()).expect(
+                    "Can't copy from DLL dir",
+                );
             }
         }
     }
+}
+
+
+
+fn generate_atlas_struct() {
+    use std::fs::File;
+    use std::io::Write;
+    use std::path::Path;
+    let mut assets = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+
+    assets.pop();
+    assets.push("assets");
+    assets.push("tiles");
+
+    let o_dir = env::var("OUT_DIR").unwrap();
+    let dest_path = Path::new(&o_dir).join("atlas.rs");
+    let mut file = File::create(&dest_path).unwrap();
+
+    file.write_all(
+        b"use sdl2::render::Texture;
+use sdl2::render::TextureCreator;
+use sdl2::image::LoadTexture;
+use sdl2::video::WindowContext;
+
+pub struct Atlas<'a>{
+",
+    ).unwrap();
+
+    let names: Vec<String> = std::fs::read_dir(assets)
+        .expect("Can't read assets/tiles dir")
+        .map(|x| x.unwrap().file_name().into_string().unwrap())
+        .collect();
+
+    for f in names.iter() {
+        file.write_all(format!("    pub tex_{}: Texture<'a>,\n", f.trim_right_matches(".png")).as_bytes())
+            .unwrap();
+    }
+
+    // Constructor
+    file.write_all(
+        b"}
+impl <'a> Atlas <'a>{
+    pub fn new(texture_creator: &'a TextureCreator<WindowContext>) -> Atlas<'a>{
+        Atlas{
+",
+    ).unwrap();
+
+    for f in names {
+        file.write_all(
+            format!(
+                "    tex_{}: texture_creator.load_texture(\"./assets/tiles/{}\").expect(\"Could not load texture: {} !\"),\n",
+                f.trim_right_matches(".png"),
+                f,
+                f
+            ).as_bytes(),
+        ).unwrap();
+    }
+
+    file.write_all(
+        b"}
+    }
+}
+",
+    ).unwrap();
 }

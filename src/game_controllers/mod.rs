@@ -4,7 +4,7 @@ mod game_controller;
 pub use self::game_controller::GameController;
 use std::collections::HashMap;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct GameControllerManager {
     controllers: HashMap<i32, GameController>,
 }

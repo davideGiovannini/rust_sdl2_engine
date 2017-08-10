@@ -6,7 +6,8 @@ pub mod game;
 use sdl2;
 use sdl2::ttf::Sdl2TtfContext;
 use sdl2::event::Event;
-use sdl2::render::WindowCanvas;
+use sdl2::render::{WindowCanvas, TextureCreator};
+use sdl2::video::WindowContext;
 use std::collections::HashSet;
 use sdl2::keyboard::Scancode;
 use sdl2::{EventPump, TimerSubsystem};
@@ -21,6 +22,7 @@ use super::sdl2_utils;
 
 pub struct Engine {
     pub renderer: WindowCanvas,
+    pub texture_creator: TextureCreator<WindowContext>,
     pub ttf_context: Sdl2TtfContext,
     timer_subsystem: TimerSubsystem,
     event_pump: EventPump,
@@ -139,12 +141,14 @@ pub fn run_engine(options: &mut EngineBuilder, initial_scene: fn(&Engine)-> AnyG
 
 
 pub fn make_engine(renderer: WindowCanvas,
+                   texture_creator: TextureCreator<WindowContext>,
                    ttf_context: Sdl2TtfContext,
                    timer_subsystem: TimerSubsystem,
                    event_pump: EventPump)
             -> Engine {
     Engine {
         renderer,
+        texture_creator,
         ttf_context,
         timer_subsystem,
         event_pump,

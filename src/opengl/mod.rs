@@ -22,5 +22,5 @@ pub fn find_sdl_gl_driver() -> Option<u32> {
 
 #[inline]
 pub fn size_of_glfloat(num: i32) -> i32 {
-    return num * mem::size_of::<GLfloat>() as i32;
+    num * mem::size_of::<GLfloat>() as i32
 }
