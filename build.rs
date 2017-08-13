@@ -60,7 +60,7 @@ use sdl2::render::TextureCreator;
 use sdl2::image::LoadTexture;
 use sdl2::video::WindowContext;
 
-pub struct Atlas<'a>{
+pub struct Atlas{
 ",
     ).unwrap();
 
@@ -70,15 +70,15 @@ pub struct Atlas<'a>{
         .collect();
 
     for f in names.iter() {
-        file.write_all(format!("    pub tex_{}: Texture<'a>,\n", f.trim_right_matches(".png")).as_bytes())
+        file.write_all(format!("    pub tex_{}: Texture,\n", f.trim_right_matches(".png")).as_bytes())
             .unwrap();
     }
 
     // Constructor
     file.write_all(
         b"}
-impl <'a> Atlas <'a>{
-    pub fn new(texture_creator: &'a TextureCreator<WindowContext>) -> Atlas<'a>{
+impl Atlas{
+    pub fn new(texture_creator: &TextureCreator<WindowContext>) -> Atlas{
         Atlas{
 ",
     ).unwrap();
