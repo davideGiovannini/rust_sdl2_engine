@@ -19,3 +19,9 @@ pub trait GameScene {
     /// Called when this scene is reactivated.
     fn on_resume(&mut self){}
 }
+
+
+pub trait FromEngine {
+    fn init(engine: &Engine) -> Self;
+}
+

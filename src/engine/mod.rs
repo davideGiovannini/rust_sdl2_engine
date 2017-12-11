@@ -12,7 +12,7 @@ use std::collections::HashSet;
 use sdl2::keyboard::Scancode;
 use sdl2::{EventPump, TimerSubsystem};
 
-use {EngineBuilder, EngineAction, EngineContext, AnyGameScene};
+use {EngineBuilder, EngineAction, EngineContext, AnyGameScene, GameScene, FromEngine};
 
 use fps_counter::FpsCounter;
 use game_controllers::GameControllerManager;
@@ -29,7 +29,7 @@ pub struct Engine {
 }
 
 
-pub fn run_engine(options: &mut EngineBuilder, initial_scene: fn(&Engine)-> AnyGameScene) {
+pub fn run_engine<Scene: 'static>(options: &mut EngineBuilder) where Scene: GameScene+FromEngine {
     let (width, height) = options.window_size;
 
     let mut engine = sdl2_utils::initialize_engine(options.window_title,
@@ -42,7 +42,7 @@ pub fn run_engine(options: &mut EngineBuilder, initial_scene: fn(&Engine)-> AnyG
 
     let mut game_controller_manager = GameControllerManager::new();
 
-    let mut game = initial_scene(&engine);
+    let mut game: AnyGameScene = Box::new(Scene::init(&engine));
 
     game.set_up();
 
@@ -59,7 +59,7 @@ pub fn run_engine(options: &mut EngineBuilder, initial_scene: fn(&Engine)-> AnyG
             continue;
         }
         if let Some(fps) = maybe_fps {
-            let mut window = engine.renderer.window_mut();
+            let window = engine.renderer.window_mut();
             let title = format!("{}: {} fps", options.window_title, fps);
             window.set_title(&title).unwrap();
         }
@@ -91,7 +91,7 @@ pub fn run_engine(options: &mut EngineBuilder, initial_scene: fn(&Engine)-> AnyG
             EngineAction::Quit => break 'running,
             EngineAction::ToggleFullScreen => {
                 use sdl2::video::FullscreenType;
-                let mut window = engine.renderer.window_mut();
+                let window = engine.renderer.window_mut();
                 let status = if options.fullscreen {
                     FullscreenType::Off
                 } else {

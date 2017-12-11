@@ -54,6 +54,11 @@ fn generate_atlas_struct() {
     let dest_path = Path::new(&o_dir).join("atlas.rs");
     let mut file = File::create(&dest_path).unwrap();
 
+    if !assets.exists(){
+        file.write_all(b"pub struct Atlas{}").unwrap();
+        return;
+    }
+
     file.write_all(
         b"use sdl2::render::Texture;
 use sdl2::render::TextureCreator;

@@ -16,7 +16,7 @@ mod common_macros;
 pub use post_processing::PostProcessEffect as PostProcessingEffect;
 
 pub mod math;
-pub use engine::game::{AnyGameScene, GameScene};
+pub use engine::game::{AnyGameScene, GameScene, FromEngine};
 pub use game_controllers::{GameControllerManager, GameController};
 
 pub use engine::context::EngineContext;
@@ -52,11 +52,13 @@ impl Engine {
 
 impl<'window> EngineBuilder<'window> {
 
+    /// Set the initial size of the window.
     pub fn with_window_size(&mut self, width: u32, height: u32) -> &mut Self {
         self.window_size = (width, height);
         self
     }
 
+    /// Set the logical render size.
     pub fn with_logical_size(&mut self, width: u32, height: u32) -> &mut Self {
         self.logical_size = Some((width, height));
         self
@@ -72,8 +74,9 @@ impl<'window> EngineBuilder<'window> {
         self
     }
 
-    pub fn start(&mut self, initial_scene: fn(&Engine) -> AnyGameScene) {
-        engine::run_engine(self, initial_scene)
+    /// Start the engine.
+    pub fn start<Scene: 'static>(&mut self) where Scene: GameScene+FromEngine {
+        engine::run_engine::<Scene>(self)
     }
 }
 
