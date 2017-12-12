@@ -7,17 +7,20 @@ use game_controllers::GameController;
 pub struct EngineContext {
     keyboard_down: HashSet<Scancode>,
     keyboard_pressed: HashSet<Scancode>,
+    pub delta_time: u32,
     pub controllers: HashMap<i32, GameController>,
 }
 
 impl EngineContext {
     pub fn new(keyboard_down: HashSet<Scancode>,
                keyboard_pressed: HashSet<Scancode>,
+               delta_time: u32,
                controllers: HashMap<i32, GameController>)
                -> EngineContext {
         EngineContext {
             keyboard_down,
             keyboard_pressed,
+            delta_time,
             controllers,
         }
     }

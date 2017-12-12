@@ -1,16 +1,20 @@
 [package]
-name = "sdl2_engine"
-version = "0.1.0"
 authors = ["Davide Giovannini <giovannini.davide90@gmail.com>"]
 build = "build.rs"
-
+name = "sdl2_engine"
+version = "0.1.0"
 
 [dependencies]
 gl = "0.7.0"
 
 [dependencies.sdl2]
-version = "0.30"
-default-features = false
-features = ["ttf","image","mixer", "unsafe_textures"]
-git = "https://github.com/Rust-SDL2/rust-sdl2.git"
 branch = "unsafe-textures-feature"
+default-features = false
+features = [
+    "ttf",
+    "image",
+    "mixer",
+    "unsafe_textures",
+]
+git = "https://github.com/Rust-SDL2/rust-sdl2.git"
+version = "0.30"

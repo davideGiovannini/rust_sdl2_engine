@@ -10,7 +10,7 @@ use sdl2::render::{WindowCanvas, TextureCreator};
 use sdl2::video::WindowContext;
 use std::collections::HashSet;
 use sdl2::keyboard::Scancode;
-use sdl2::{EventPump, TimerSubsystem};
+use sdl2::EventPump;
 
 use {EngineBuilder, EngineAction, EngineContext, AnyGameScene, GameScene, FromEngine};
 
@@ -24,7 +24,6 @@ pub struct Engine {
     pub renderer: WindowCanvas,
     pub texture_creator: TextureCreator<WindowContext>,
     pub ttf_context: Sdl2TtfContext,
-    timer_subsystem: TimerSubsystem,
     event_pump: EventPump,
 }
 
@@ -38,7 +37,7 @@ pub fn run_engine<Scene: 'static>(options: &mut EngineBuilder) where Scene: Game
                                                 options.fullscreen,
                                                 options.logical_size);
 
-    let mut fps_counter = FpsCounter::new(&mut engine.timer_subsystem);
+    let mut fps_counter = FpsCounter::new();
 
     let mut game_controller_manager = GameControllerManager::new();
 
@@ -54,7 +53,7 @@ pub fn run_engine<Scene: 'static>(options: &mut EngineBuilder) where Scene: Game
 
     'running: loop {
 
-        let (should_wait, maybe_fps) = fps_counter.tick(&mut engine.timer_subsystem);
+        let (should_wait, maybe_fps, delta_time) = fps_counter.tick();
         if should_wait {
             continue;
         }
@@ -85,6 +84,7 @@ pub fn run_engine<Scene: 'static>(options: &mut EngineBuilder) where Scene: Game
 
         let context = EngineContext::new(keys_snapshot,
                                          newly_pressed,
+                                         delta_time,
                                          game_controller_manager.snapshot());
         let action = game_stack.last_mut().unwrap().logic(context);
         match action {
@@ -143,14 +143,12 @@ pub fn run_engine<Scene: 'static>(options: &mut EngineBuilder) where Scene: Game
 pub fn make_engine(renderer: WindowCanvas,
                    texture_creator: TextureCreator<WindowContext>,
                    ttf_context: Sdl2TtfContext,
-                   timer_subsystem: TimerSubsystem,
                    event_pump: EventPump)
             -> Engine {
     Engine {
         renderer,
         texture_creator,
         ttf_context,
-        timer_subsystem,
         event_pump,
     }
 }

@@ -19,7 +19,6 @@ pub fn initialize_engine(
     let _image_context = sdl2::image::init(INIT_PNG).unwrap();
     let video_subsystem = sdl_context.video().unwrap();
     let ttf_context = sdl2::ttf::init().unwrap();
-    let timer_subsystem = sdl_context.timer().unwrap();
 
     let _mixer_context = init_sdl_mixer();
 
@@ -72,7 +71,6 @@ pub fn initialize_engine(
         renderer,
         texture_creator,
         ttf_context,
-        timer_subsystem,
         event_pump,
     )
 }
