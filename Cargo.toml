@@ -14,6 +14,7 @@ features = [
     "ttf",
     "image",
     "mixer",
+    "gfx",
     "unsafe_textures",
 ]
 git = "https://github.com/Rust-SDL2/rust-sdl2.git"
