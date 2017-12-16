@@ -9,6 +9,7 @@ pub struct FpsCounter {
     interval: Duration,
     before: Instant,
     last_second: Instant,
+    init_time: Instant,
     fps: u16,
 }
 
@@ -18,6 +19,7 @@ impl FpsCounter {
             interval: Duration::from_millis(INTERVAL),
             before: Instant::now(),
             last_second: Instant::now(),
+            init_time: Instant::now(),
             fps: 0u16,
         }
     }
@@ -49,5 +51,10 @@ impl FpsCounter {
             return (false, Some(fps), PHYSIC_INTERVAL);
         }
         (false, None, PHYSIC_INTERVAL)
+    }
+
+    pub fn elapsed(&self) -> u64{
+        let elapsed = self.init_time.elapsed();
+          elapsed.as_secs() * 1_000 + u64::from(elapsed.subsec_nanos())/1_000_000
     }
 }

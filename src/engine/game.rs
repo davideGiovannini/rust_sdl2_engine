@@ -10,9 +10,9 @@ pub trait GameScene {
 
     fn process_event(&mut self, _: &Event) {}
 
-    fn logic(&mut self, context: EngineContext) -> EngineAction;
+    fn logic(&mut self, context: &EngineContext) -> EngineAction;
 
-    fn render(&mut self, engine: &mut Engine);
+    fn render(&mut self, context: &EngineContext, engine: &mut Engine);
 
     /// Called when another scene has been pushed on the stack
     fn on_pause(&mut self){}

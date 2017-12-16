@@ -85,8 +85,9 @@ pub fn run_engine<Scene: 'static>(options: &mut EngineBuilder) where Scene: Game
         let context = EngineContext::new(keys_snapshot,
                                          newly_pressed,
                                          delta_time,
+                                         fps_counter.elapsed(),
                                          game_controller_manager.snapshot());
-        let action = game_stack.last_mut().unwrap().logic(context);
+        let action = game_stack.last_mut().unwrap().logic(&context);
         match action {
             EngineAction::Quit => break 'running,
             EngineAction::ToggleFullScreen => {
@@ -130,7 +131,7 @@ pub fn run_engine<Scene: 'static>(options: &mut EngineBuilder) where Scene: Game
         engine.renderer.set_draw_color(clear_color);
         engine.renderer.clear();
 
-        game_stack.last_mut().unwrap().render(&mut engine);
+        game_stack.last_mut().unwrap().render(&context, &mut engine);
 
         engine.renderer.present();
     }
