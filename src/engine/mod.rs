@@ -70,7 +70,8 @@ pub fn run_engine<Scene: 'static>(options: &mut EngineBuilder) where Scene: Game
                     game_controller_manager.added_controller(which)
                 }
                 Event::ControllerDeviceRemoved { which, .. } => {
-                    game_controller_manager.removed_controller(which)
+                    // TODO check if cast is ok
+                    game_controller_manager.removed_controller(which as u32)
                 }
                 _ => {
                     game_stack.last_mut().unwrap().process_event(&event);

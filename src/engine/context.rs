@@ -9,7 +9,8 @@ pub struct EngineContext {
     keyboard_pressed: HashSet<Scancode>,
     pub delta_time: u32,
     pub elapsed_time: u64,
-    pub controllers: HashMap<i32, GameController>,
+    // TODO use a reference instead of a clone
+    pub controllers: HashMap<u32, GameController>,
 }
 
 impl EngineContext {
@@ -17,7 +18,7 @@ impl EngineContext {
                keyboard_pressed: HashSet<Scancode>,
                delta_time: u32,
                elapsed_time: u64,
-               controllers: HashMap<i32, GameController>)
+               controllers: HashMap<u32, GameController>)
                -> EngineContext {
         EngineContext {
             keyboard_down,

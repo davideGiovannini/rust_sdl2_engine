@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 #[derive(Debug, Default)]
 pub struct GameControllerManager {
-    controllers: HashMap<i32, GameController>,
+    controllers: HashMap<u32, GameController>,
 }
 
 impl GameControllerManager {
@@ -18,10 +18,12 @@ impl GameControllerManager {
         GameControllerManager { controllers: GameControllerManager::load_all_connected_devices() }
     }
 
-    fn load_all_connected_devices() -> HashMap<i32, GameController> {
+    fn load_all_connected_devices() -> HashMap<u32, GameController> {
         unsafe {
-            use sdl2::sys::joystick::*;
-            let num_joysticks = SDL_NumJoysticks();
+            use sdl2::sys::SDL_NumJoysticks;
+
+            // TODO check conversion
+            let num_joysticks: u32 = SDL_NumJoysticks() as u32;
 
             let mut map = HashMap::with_capacity(num_joysticks as usize);
 
@@ -37,21 +39,21 @@ impl GameControllerManager {
     }
 
 
-    pub fn added_controller(&mut self, which: i32) {
+    pub fn added_controller(&mut self, which: u32) {
         println!("Added controller {:?}", which);
         if let Some(controller) = GameController::from_joystick_index(which) {
             self.controllers.insert(controller.instance_id(), controller);
         }
     }
 
-    pub fn removed_controller(&mut self, which: i32) {
+    pub fn removed_controller(&mut self, which: u32) {
         println!("Disconnected controller {:?}", which);
         if let Some(controller) = self.controllers.remove(&which) {
             self::game_controller::close_controller(controller)
         }
     }
 
-    pub fn snapshot(&self) -> HashMap<i32, GameController> {
+    pub fn snapshot(&self) -> HashMap<u32, GameController> {
         self.controllers.clone()
     }
 }

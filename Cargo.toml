@@ -8,7 +8,6 @@ version = "0.1.0"
 gl = "0.7.0"
 
 [dependencies.sdl2]
-branch = "unsafe-textures-feature"
 default-features = false
 features = [
     "ttf",
@@ -17,5 +16,4 @@ features = [
     "gfx",
     "unsafe_textures",
 ]
-git = "https://github.com/Rust-SDL2/rust-sdl2.git"
-version = "0.30"
+version = "0.31"
