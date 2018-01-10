@@ -1,10 +1,8 @@
-
 use gl;
 use gl::types::*;
 
 use std::ffi;
 use std::os::raw::c_void;
-
 
 pub struct VertexAttribArray {
     loc: GLuint,
@@ -22,11 +20,13 @@ impl VertexAttribArray {
         gl::EnableVertexAttribArray(self.loc);
     }
 
-    pub unsafe fn vertex_attrib_pointer(&self,
-                                        size: GLint,
-                                        gl_type: GLenum,
-                                        stride: GLsizei,
-                                        offset: *const c_void) {
+    pub unsafe fn vertex_attrib_pointer(
+        &self,
+        size: GLint,
+        gl_type: GLenum,
+        stride: GLsizei,
+        offset: *const c_void,
+    ) {
         gl::VertexAttribPointer(self.loc, size, gl_type, gl::FALSE, stride, offset);
     }
 

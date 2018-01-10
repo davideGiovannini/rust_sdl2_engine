@@ -22,7 +22,6 @@ pub fn initialize_engine(
 
     let _mixer_context = init_sdl_mixer();
 
-
     let mut window_builder = video_subsystem.window(window_title, width, height);
     window_builder.position_centered().opengl().resizable();
 
@@ -43,10 +42,10 @@ pub fn initialize_engine(
     let gl_attr = video_subsystem.gl_attr();
     gl_attr.set_context_profile(sdl2::video::GLProfile::Core);
     // Set the context into debug mode
-    #[cfg(debug_assertions)] gl_attr.set_context_flags().debug().set();
+    #[cfg(debug_assertions)]
+    gl_attr.set_context_flags().debug().set();
     // Set the OpenGL context version (OpenGL 3.1)
     gl_attr.set_context_version(3, 1);
-
 
     gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
     renderer.window().gl_set_context_to_current().unwrap();
@@ -67,25 +66,14 @@ pub fn initialize_engine(
 
     let texture_creator = renderer.texture_creator();
 
-    make_engine(
-        renderer,
-        texture_creator,
-        ttf_context,
-        event_pump,
-    )
+    make_engine(renderer, texture_creator, ttf_context, event_pump)
 }
-
-
-
-
-
 
 #[inline]
 fn init_sdl_mixer() {
     sdl2::mixer::open_audio(44_100, sdl2::mixer::AUDIO_S16LSB, 2, 1024).unwrap();
     sdl2::mixer::allocate_channels(32);
 }
-
 
 pub fn log_system_info() -> String {
     format!(

@@ -76,11 +76,11 @@ impl GameController {
     /// Get the position of the given `axis`
     pub fn axis(&self, axis: Axis) -> i16 {
         let raw_axis = match axis {
-            Axis::LeftX        => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTX,
-            Axis::LeftY        => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTY,
-            Axis::RightX       => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_RIGHTX,
-            Axis::RightY       => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_RIGHTY,
-            Axis::TriggerLeft  => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_TRIGGERLEFT,
+            Axis::LeftX => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTX,
+            Axis::LeftY => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTY,
+            Axis::RightX => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_RIGHTX,
+            Axis::RightY => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_RIGHTY,
+            Axis::TriggerLeft => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_TRIGGERLEFT,
             Axis::TriggerRight => sys::SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_TRIGGERRIGHT,
         };
 
@@ -89,22 +89,25 @@ impl GameController {
 
     /// Returns `true` if `button` is pressed.
     pub fn button(&self, button: Button) -> bool {
-
         let raw_button = match button {
-            Button::A             => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A,
-            Button::B             => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_B,
-            Button::X             => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_X,
-            Button::Y             => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_Y,
-            Button::Back          => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_BACK,
-            Button::Guide         => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_GUIDE,
-            Button::Start         => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_START,
-            Button::LeftStick     => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSTICK,
-            Button::RightStick    => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSTICK,
-            Button::LeftShoulder  => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-            Button::RightShoulder => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-            Button::DPadUp        => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP,
-            Button::DPadDown      => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-            Button::DPadLeft      => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+            Button::A => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A,
+            Button::B => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_B,
+            Button::X => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_X,
+            Button::Y => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_Y,
+            Button::Back => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_BACK,
+            Button::Guide => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_GUIDE,
+            Button::Start => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_START,
+            Button::LeftStick => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSTICK,
+            Button::RightStick => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSTICK,
+            Button::LeftShoulder => {
+                sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER
+            }
+            Button::RightShoulder => {
+                sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
+            }
+            Button::DPadUp => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP,
+            Button::DPadDown => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+            Button::DPadLeft => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
             Button::DPadRight => sys::SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
         };
 
@@ -123,11 +126,10 @@ struct Haptic {
     raw: *mut SDL_Haptic,
 }
 
-
 impl Haptic {
     fn from_joystick(joystick: *mut SDL_Joystick) -> Haptic {
         unsafe {
-//            use sdl2::sys::haptic::*;
+            //            use sdl2::sys::haptic::*;
 
             let haptic = SDL_HapticOpenFromJoystick(joystick);
             SDL_HapticRumbleInit(haptic);
@@ -138,7 +140,7 @@ impl Haptic {
 
     fn play(&self, strenght: f32, duration: u32) {
         unsafe {
-//            use sdl2::sys::haptic::*;
+            //            use sdl2::sys::haptic::*;
             SDL_HapticRumblePlay(self.raw, strenght, duration)
         };
     }
@@ -146,8 +148,8 @@ impl Haptic {
 
 pub fn close_controller(controller: GameController) {
     unsafe {
-//        use sdl2::sys::joystick::*;
-//        use sdl2::sys::haptic::*;
+        //        use sdl2::sys::joystick::*;
+        //        use sdl2::sys::haptic::*;
 
         if let Some(haptic) = controller.haptic {
             SDL_HapticClose(haptic.raw);

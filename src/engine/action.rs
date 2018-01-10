@@ -1,4 +1,3 @@
-
 use AnyGameScene;
 use Engine;
 
@@ -10,7 +9,6 @@ pub enum EngineAction {
     SwitchToScene(Box<FnMut(&Engine) -> AnyGameScene>),
     Quit,
 }
-
 
 impl Default for EngineAction {
     fn default() -> Self {

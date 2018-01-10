@@ -14,12 +14,13 @@ pub struct EngineContext {
 }
 
 impl EngineContext {
-    pub fn new(keyboard_down: HashSet<Scancode>,
-               keyboard_pressed: HashSet<Scancode>,
-               delta_time: u32,
-               elapsed_time: u64,
-               controllers: HashMap<u32, GameController>)
-               -> EngineContext {
+    pub fn new(
+        keyboard_down: HashSet<Scancode>,
+        keyboard_pressed: HashSet<Scancode>,
+        delta_time: u32,
+        elapsed_time: u64,
+        controllers: HashMap<u32, GameController>,
+    ) -> EngineContext {
         EngineContext {
             keyboard_down,
             keyboard_pressed,

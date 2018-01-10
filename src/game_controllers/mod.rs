@@ -1,5 +1,3 @@
-
-
 mod game_controller;
 pub use self::game_controller::GameController;
 use std::collections::HashMap;
@@ -15,7 +13,9 @@ impl GameControllerManager {
             use sdl2::sys as ll;
             ll::SDL_InitSubSystem(ll::SDL_INIT_GAMECONTROLLER | ll::SDL_INIT_HAPTIC);
         };
-        GameControllerManager { controllers: GameControllerManager::load_all_connected_devices() }
+        GameControllerManager {
+            controllers: GameControllerManager::load_all_connected_devices(),
+        }
     }
 
     fn load_all_connected_devices() -> HashMap<u32, GameController> {
@@ -38,11 +38,11 @@ impl GameControllerManager {
         }
     }
 
-
     pub fn added_controller(&mut self, which: u32) {
         println!("Added controller {:?}", which);
         if let Some(controller) = GameController::from_joystick_index(which) {
-            self.controllers.insert(controller.instance_id(), controller);
+            self.controllers
+                .insert(controller.instance_id(), controller);
         }
     }
 

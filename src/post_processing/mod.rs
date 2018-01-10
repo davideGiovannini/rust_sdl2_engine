@@ -16,7 +16,6 @@ pub struct PostProcessEffect {
 
 impl PostProcessEffect {
     pub fn new() -> Result<PostProcessEffect, String> {
-
         unsafe {
             let vertex_source = ffi::CString::new(
                 r#"#version 130
@@ -27,8 +26,7 @@ out vec2 f_uv;
 void main() {
     gl_Position = vec4( v_position, 0.0, 1.0 );
        f_uv = v_uv;
- }"#
-                    .as_bytes()
+ }"#.as_bytes(),
             ).unwrap();
             let fragment_source = ffi::CString::new(
                 "#version 130
@@ -49,22 +47,7 @@ void main() {
             let program = compile_program(vertex_shader, fragment_shader)?;
 
             let vertex_data: [GLfloat; 16] = [
-                -1.0,
-                -1.0,
-                0.0,
-                1.0,
-                1.0,
-                -1.0,
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-                0.0,
-                -1.0,
-                1.0,
-                0.0,
-                0.0,
+                -1.0, -1.0, 0.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, -1.0, 1.0, 0.0, 0.0
             ];
             let mut g_vbo: GLuint = 0;
             // Create VBO
@@ -106,12 +89,8 @@ void main() {
             self.v_uv.enable();
             // Set vertex data
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vertex_data);
-            self.v_position.vertex_attrib_pointer(
-                2,
-                gl::FLOAT,
-                size_of_glfloat(4),
-                ptr::null(),
-            );
+            self.v_position
+                .vertex_attrib_pointer(2, gl::FLOAT, size_of_glfloat(4), ptr::null());
             self.v_uv.vertex_attrib_pointer(
                 2,
                 gl::FLOAT,

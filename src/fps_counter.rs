@@ -3,7 +3,7 @@ use std::thread;
 
 const INTERVAL: u64 = 1_000 / 60;
 
-const PHYSIC_INTERVAL: u32 = 1_000/ 60;
+const PHYSIC_INTERVAL: u32 = 1_000 / 60;
 
 pub struct FpsCounter {
     interval: Duration,
@@ -53,8 +53,8 @@ impl FpsCounter {
         (false, None, PHYSIC_INTERVAL)
     }
 
-    pub fn elapsed(&self) -> u64{
+    pub fn elapsed(&self) -> u64 {
         let elapsed = self.init_time.elapsed();
-          elapsed.as_secs() * 1_000 + u64::from(elapsed.subsec_nanos())/1_000_000
+        elapsed.as_secs() * 1_000 + u64::from(elapsed.subsec_nanos()) / 1_000_000
     }
 }

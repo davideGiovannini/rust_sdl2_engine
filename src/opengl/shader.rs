@@ -1,12 +1,12 @@
-
 use gl;
 use gl::types::*;
 
 use std::{ffi, ptr};
 
-pub unsafe fn compile_program(vertex_shader: GLuint,
-                              fragment_shader: GLuint)
-                              -> Result<GLuint, String> {
+pub unsafe fn compile_program(
+    vertex_shader: GLuint,
+    fragment_shader: GLuint,
+) -> Result<GLuint, String> {
     let program: GLuint = gl::CreateProgram();
 
     gl::AttachShader(program, vertex_shader);
@@ -24,7 +24,6 @@ pub unsafe fn compile_program(vertex_shader: GLuint,
 }
 
 pub unsafe fn create_shader(source: &ffi::CString, shader_type: GLuint) -> Result<GLuint, String> {
-
     // Create vertex shader
     let shader: GLuint = gl::CreateShader(shader_type);
     // Get vertex source
@@ -36,9 +35,11 @@ pub unsafe fn create_shader(source: &ffi::CString, shader_type: GLuint) -> Resul
     let mut shader_compiled: GLint = gl::FALSE as i32;
     gl::GetShaderiv(shader, gl::COMPILE_STATUS, &mut shader_compiled);
     if shader_compiled != gl::TRUE as i32 {
-        return Err(format!("Unable to compile shader: {:?}\n{}",
-                           source,
-                           print_shader_log(shader)));
+        return Err(format!(
+            "Unable to compile shader: {:?}\n{}",
+            source,
+            print_shader_log(shader)
+        ));
     }
     Ok(shader)
 }
@@ -52,8 +53,8 @@ unsafe fn print_shader_log(shader: GLuint) -> String {
         // Get info string length
         gl::GetShaderiv(shader, gl::INFO_LOG_LENGTH, &mut max_length);
         // Allocate string
-        let info_log = ffi::CString::from_vec_unchecked(Vec::with_capacity(max_length as usize))
-            .into_raw();
+        let info_log =
+            ffi::CString::from_vec_unchecked(Vec::with_capacity(max_length as usize)).into_raw();
         // Get info log
         gl::GetShaderInfoLog(shader, max_length, &mut info_log_length, info_log);
         if info_log_length > 0 {

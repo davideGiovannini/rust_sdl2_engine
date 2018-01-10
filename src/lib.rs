@@ -1,5 +1,5 @@
-pub extern crate sdl2;
 extern crate gl;
+pub extern crate sdl2;
 
 use sdl2::pixels::Color;
 
@@ -16,8 +16,8 @@ mod common_macros;
 pub use post_processing::PostProcessEffect as PostProcessingEffect;
 
 pub mod math;
-pub use engine::game::{AnyGameScene, GameScene, FromEngine};
-pub use game_controllers::{GameControllerManager, GameController};
+pub use engine::game::{AnyGameScene, FromEngine, GameScene};
+pub use game_controllers::{GameController, GameControllerManager};
 
 pub use engine::context::EngineContext;
 pub use engine::action::EngineAction;
@@ -30,7 +30,12 @@ pub mod resources;
 pub mod font;
 
 const WINDOW_SIZE: (u32, u32) = (800, 600);
-const CLEAR_COLOR: Color = Color{r: 0, g: 0, b: 0, a: 255};
+const CLEAR_COLOR: Color = Color {
+    r: 0,
+    g: 0,
+    b: 0,
+    a: 255,
+};
 
 pub struct EngineBuilder<'window> {
     window_title: &'window str,
@@ -47,13 +52,12 @@ impl Engine {
             window_size: WINDOW_SIZE,
             logical_size: None,
             clear_color: CLEAR_COLOR,
-            fullscreen: false
+            fullscreen: false,
         }
     }
 }
 
 impl<'window> EngineBuilder<'window> {
-
     /// Set the initial size of the window.
     pub fn with_window_size(&mut self, width: u32, height: u32) -> &mut Self {
         self.window_size = (width, height);
@@ -66,25 +70,27 @@ impl<'window> EngineBuilder<'window> {
         self
     }
 
-    pub fn with_clear_color(&mut self, color: Color) -> &mut Self{
+    pub fn with_clear_color(&mut self, color: Color) -> &mut Self {
         self.clear_color = color;
         self
     }
 
-    pub fn with_fullscreen(&mut self, fullscreen: bool) -> &mut Self{
+    pub fn with_fullscreen(&mut self, fullscreen: bool) -> &mut Self {
         self.fullscreen = fullscreen;
         self
     }
 
     /// Start the engine.
-    pub fn start<Scene: 'static>(&mut self) where Scene: GameScene+FromEngine {
+    pub fn start<Scene: 'static>(&mut self)
+    where
+        Scene: GameScene + FromEngine,
+    {
         engine::run_engine::<Scene>(self)
     }
 }
 
-
 // RE-EXPORTS
 
-pub mod keyboard{
+pub mod keyboard {
     pub use sdl2::keyboard::Scancode;
 }

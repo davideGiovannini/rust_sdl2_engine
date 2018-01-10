@@ -6,7 +6,7 @@ fn main() {
     generate_atlas_struct();
 }
 
-fn copy_runtimes_libs(){
+fn copy_runtimes_libs() {
     let target = env::var("TARGET").unwrap();
     let mut out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
     let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
@@ -30,15 +30,12 @@ fn copy_runtimes_libs(){
             let mut new_file_path = out_dir.clone();
             if let Some(file_name) = file_name_result {
                 new_file_path.push(file_name.to_str().unwrap());
-                std::fs::copy(&entry_path, new_file_path.as_path()).expect(
-                    "Can't copy from DLL dir",
-                );
+                std::fs::copy(&entry_path, new_file_path.as_path())
+                    .expect("Can't copy from DLL dir");
             }
         }
     }
 }
-
-
 
 fn generate_atlas_struct() {
     use std::fs::File;
@@ -54,7 +51,7 @@ fn generate_atlas_struct() {
     let dest_path = Path::new(&o_dir).join("atlas.rs");
     let mut file = File::create(&dest_path).unwrap();
 
-    if !assets.exists(){
+    if !assets.exists() {
         file.write_all(b"pub struct Atlas{}").unwrap();
         return;
     }
@@ -75,8 +72,9 @@ pub struct Atlas{
         .collect();
 
     for f in names.iter() {
-        file.write_all(format!("    pub tex_{}: Texture,\n", f.trim_right_matches(".png")).as_bytes())
-            .unwrap();
+        file.write_all(
+            format!("    pub tex_{}: Texture,\n", f.trim_right_matches(".png")).as_bytes(),
+        ).unwrap();
     }
 
     // Constructor
