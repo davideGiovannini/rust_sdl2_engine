@@ -6,6 +6,8 @@ version = "0.1.0"
 
 [dependencies]
 gl = "0.7.0"
+alto = "3.0.1"
+lewton = "0.7.0"
 
 [dependencies.sdl2]
 default-features = false

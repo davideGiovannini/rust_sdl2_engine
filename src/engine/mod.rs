@@ -2,6 +2,8 @@ pub mod action;
 pub mod context;
 pub mod game;
 
+use alto;
+
 use sdl2;
 use sdl2::ttf::Sdl2TtfContext;
 use sdl2::event::Event;
@@ -22,6 +24,7 @@ pub struct Engine {
     pub renderer: WindowCanvas,
     pub texture_creator: TextureCreator<WindowContext>,
     pub ttf_context: Sdl2TtfContext,
+    pub alto_context: alto::Context,
     event_pump: EventPump,
 }
 
@@ -95,7 +98,7 @@ where
             fps_counter.elapsed(),
             game_controller_manager.snapshot(),
         );
-        let action = game_stack.last_mut().unwrap().logic(&context);
+        let action = game_stack.last_mut().unwrap().logic(&context, &engine);
         match action {
             EngineAction::Quit => break 'running,
             EngineAction::ToggleFullScreen => {
@@ -153,10 +156,14 @@ pub fn make_engine(
     ttf_context: Sdl2TtfContext,
     event_pump: EventPump,
 ) -> Engine {
+
+    let alto_context = super::alto_utils::initialize_context();
+
     Engine {
         renderer,
         texture_creator,
         ttf_context,
         event_pump,
+        alto_context,
     }
 }

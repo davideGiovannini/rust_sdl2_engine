@@ -9,7 +9,7 @@ pub trait GameScene {
 
     fn process_event(&mut self, _: &Event) {}
 
-    fn logic(&mut self, context: &EngineContext) -> EngineAction;
+    fn logic(&mut self, context: &EngineContext, engine: &Engine) -> EngineAction;
 
     fn render(&mut self, context: &EngineContext, engine: &mut Engine);
 

@@ -1,6 +1,9 @@
 extern crate gl;
 pub extern crate sdl2;
 
+pub extern crate alto;
+pub extern crate lewton;
+
 use sdl2::pixels::Color;
 
 mod engine;
@@ -9,6 +12,7 @@ mod game_controllers;
 mod opengl;
 mod post_processing;
 mod sdl2_utils;
+pub mod alto_utils;
 
 #[macro_use]
 mod common_macros;
