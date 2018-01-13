@@ -1,6 +1,8 @@
 extern crate gl;
 pub extern crate sdl2;
 
+extern crate failure;
+
 pub extern crate alto;
 pub extern crate lewton;
 
@@ -89,7 +91,9 @@ impl<'window> EngineBuilder<'window> {
     where
         Scene: GameScene + FromEngine,
     {
-        engine::run_engine::<Scene>(self)
+        if let Err(error) = engine::run_engine::<Scene>(self){
+            println!("{:?}", error)
+        }
     }
 }
 

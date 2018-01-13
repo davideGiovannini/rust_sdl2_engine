@@ -4,7 +4,8 @@ pub mod game;
 
 use alto;
 
-use sdl2;
+use failure::{Error, err_msg};
+
 use sdl2::ttf::Sdl2TtfContext;
 use sdl2::event::Event;
 use sdl2::render::{TextureCreator, WindowCanvas};
@@ -28,7 +29,7 @@ pub struct Engine {
     event_pump: EventPump,
 }
 
-pub fn run_engine<Scene: 'static>(options: &mut EngineBuilder)
+pub fn run_engine<Scene: 'static>(options: &mut EngineBuilder) -> Result<(), Error>
 where
     Scene: GameScene + FromEngine,
 {
@@ -40,7 +41,7 @@ where
         height,
         options.fullscreen,
         options.logical_size,
-    );
+    )?;
 
     let mut fps_counter = FpsCounter::new();
 
@@ -64,7 +65,7 @@ where
         if let Some(fps) = maybe_fps {
             let window = engine.renderer.window_mut();
             let title = format!("{}: {} fps", options.window_title, fps);
-            window.set_title(&title).unwrap();
+            window.set_title(&title)?;
         }
         // EVENT HANDLING
         for event in engine.event_pump.poll_iter() {
@@ -109,7 +110,7 @@ where
                 } else {
                     FullscreenType::Desktop
                 };
-                window.set_fullscreen(status).unwrap();
+                window.set_fullscreen(status).map_err(err_msg)?;
                 options.fullscreen = !options.fullscreen;
             }
             EngineAction::PopScene => {
@@ -147,7 +148,7 @@ where
         engine.renderer.present();
     }
     // Close up
-    sdl2::mixer::close_audio();
+    Ok(())
 }
 
 pub fn make_engine(
@@ -155,15 +156,15 @@ pub fn make_engine(
     texture_creator: TextureCreator<WindowContext>,
     ttf_context: Sdl2TtfContext,
     event_pump: EventPump,
-) -> Engine {
+) -> Result<Engine, Error> {
 
-    let alto_context = super::alto_utils::initialize_context();
+    let alto_context = super::alto_utils::initialize_context()?;
 
-    Engine {
+    Ok(Engine {
         renderer,
         texture_creator,
         ttf_context,
         event_pump,
         alto_context,
-    }
+    })
 }

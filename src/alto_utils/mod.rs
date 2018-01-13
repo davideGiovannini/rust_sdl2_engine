@@ -1,18 +1,20 @@
 
-use alto::{Alto, AltoResult, Buffer, Context, Mono, Stereo, StreamingSource};
+use failure::Error;
+
+use alto::{Alto, Buffer, Context, Mono, Stereo, StreamingSource};
 
 use lewton::inside_ogg::OggStreamReader;
 use std::fs::File;
 
-pub fn initialize_context() -> Context {
-    let alto = Alto::load_default().expect("Could not initialize alto");
+pub fn initialize_context() -> Result<Context, Error> {
+    let alto = Alto::load_default()?;
 
     for s in alto.enumerate_outputs() {
-        println!("Found device: {}", s.to_str().unwrap());
+        println!("Found device: {}", s.to_str()?);
     }
 
-    let device = alto.open(None).expect("Could not open device"); // Opens the default audio device
-    device.new_context(None).expect("Could not create context") // Creates a default context
+    let device = alto.open(None)?; // Opens the default audio device
+    Ok(device.new_context(None)?) // Creates a default context
 }
 
 
@@ -27,15 +29,14 @@ pub struct StreamingOggSource{
 }
 
 impl StreamingOggSource{
-    pub fn new(file_path: &str, context: Context) -> Self{
-        let f = File::open(file_path).expect("Can't open file");
+    pub fn new(file_path: &str, context: Context) -> Result<Self, Error>{
+        let f = File::open(file_path)?;
 
         // Prepare the reading
-        let srr = OggStreamReader::new(f).unwrap();
+        let srr = OggStreamReader::new(f)?;
 
         // Prepare the playback.
-        let str_src = context.new_streaming_source()
-            .expect("could not create streaming src");
+        let str_src = context.new_streaming_source()?;
         let sample_rate = srr.ident_hdr.audio_sample_rate as i32;
 
         if srr.ident_hdr.audio_channels > 2 {
@@ -43,23 +44,23 @@ impl StreamingOggSource{
             println!("Stream error: {} channels are too many!", srr.ident_hdr.audio_channels);
         }
 
-        StreamingOggSource{
+        Ok(StreamingOggSource{
             sample_rate,
             streaming_reader: srr,
             streaming_source: str_src
-        }
+        })
     }
 
 
-    pub fn stream(&mut self, context: &Context) -> AltoResult<()>{
-        if let Some(pck_samples) = (self.streaming_reader.read_dec_packet_itl()).expect("Error while reading source") {
+    pub fn stream(&mut self, context: &Context) -> Result<(), Error>{
+        if let Some(pck_samples) = (self.streaming_reader.read_dec_packet_itl())? {
 
             let buf = if self.streaming_source.buffers_queued() < NUM_BUFFER_POOL{
                  match self.streaming_reader.ident_hdr.audio_channels {
                     1 => context.new_buffer::<Mono<i16>,_>(&pck_samples, self.sample_rate),
                     2 => context.new_buffer::<Stereo<i16>,_>(&pck_samples, self.sample_rate),
                     n => panic!("unsupported number of channels: {}", n),
-                }.unwrap()
+                }?
             }else{
                 let mut buf = self.streaming_source.unqueue_buffer()?;
 
@@ -70,18 +71,18 @@ impl StreamingOggSource{
                     }
                     buf
             };
-            self.streaming_source.queue_buffer(buf).unwrap();
+            self.streaming_source.queue_buffer(buf)?;
         }
         Ok(())
     }
 }
 
 
-pub fn load_buffer_from_ogg_file(file_path: &str, context: &Context) -> AltoResult<Buffer> {
-    let f = File::open(file_path).expect("Can't open file");
+pub fn load_buffer_from_ogg_file(file_path: &str, context: &Context) -> Result<Buffer, Error> {
+    let f = File::open(file_path)?;
 
     // Prepare the reading
-    let mut srr = OggStreamReader::new(f).unwrap();
+    let mut srr = OggStreamReader::new(f)?;
 
     let sample_rate = srr.ident_hdr.audio_sample_rate as i32;
 
@@ -93,13 +94,14 @@ pub fn load_buffer_from_ogg_file(file_path: &str, context: &Context) -> AltoResu
 
     let mut buffer_data = Vec::new();
 
-    while let Some(pck_samples) = srr.read_dec_packet_itl().expect("error while reading ogg file"){
+    while let Some(pck_samples) = srr.read_dec_packet_itl()?{
         buffer_data.extend(pck_samples);
     }
 
-    match srr.ident_hdr.audio_channels {
+    let buffer = match srr.ident_hdr.audio_channels {
         1 => context.new_buffer::<Mono<i16>,_>(&buffer_data, sample_rate),
         2 => context.new_buffer::<Stereo<i16>,_>(&buffer_data, sample_rate),
         n => panic!("unsupported number of channels: {}", n),
-    }
+    }?;
+    Ok(buffer)
 }

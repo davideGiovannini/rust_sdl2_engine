@@ -8,13 +8,13 @@ version = "0.1.0"
 gl = "0.7.0"
 alto = "3.0.1"
 lewton = "0.7.0"
+failure = "0.1.1"
 
 [dependencies.sdl2]
 default-features = false
 features = [
     "ttf",
     "image",
-    "mixer",
     "gfx",
     "unsafe_textures",
 ]

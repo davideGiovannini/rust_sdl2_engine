@@ -7,6 +7,8 @@ use gl;
 use engine::make_engine;
 use Engine;
 
+use failure::{Error, err_msg};
+
 #[inline]
 pub fn initialize_engine(
     window_title: &str,
@@ -14,13 +16,11 @@ pub fn initialize_engine(
     height: u32,
     fullscreen: bool,
     logical_size: Option<(u32, u32)>,
-) -> Engine {
+) -> Result<Engine, Error> {
     let sdl_context = sdl2::init().unwrap();
     let _image_context = sdl2::image::init(INIT_PNG).unwrap();
     let video_subsystem = sdl_context.video().unwrap();
     let ttf_context = sdl2::ttf::init().unwrap();
-
-    let _mixer_context = init_sdl_mixer();
 
     let mut window_builder = video_subsystem.window(window_title, width, height);
     window_builder.position_centered().opengl().resizable();
@@ -29,12 +29,12 @@ pub fn initialize_engine(
         window_builder.fullscreen_desktop();
     }
 
-    let window = window_builder.build().unwrap();
+    let window = window_builder.build()?;
 
     let mut renderer = window
         .into_canvas()
         .accelerated()
-        .index(opengl::find_sdl_gl_driver().unwrap())
+        .index(opengl::find_sdl_gl_driver().ok_or(err_msg("Could not find sdl gl driver"))?)
         .target_texture()
         .build()
         .unwrap();
@@ -48,7 +48,7 @@ pub fn initialize_engine(
     gl_attr.set_context_version(3, 1);
 
     gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
-    renderer.window().gl_set_context_to_current().unwrap();
+    renderer.window().gl_set_context_to_current().map_err(err_msg)?;
 
     #[cfg(debug_assertions)]
     println!(
@@ -59,32 +59,25 @@ pub fn initialize_engine(
     );
 
     if let Some((width, height)) = logical_size {
-        renderer.set_logical_size(width, height).unwrap();
+        renderer.set_logical_size(width, height).map_err(err_msg)?;
     }
 
-    let event_pump = sdl_context.event_pump().unwrap();
+    let event_pump = sdl_context.event_pump().map_err(err_msg)?;
 
     let texture_creator = renderer.texture_creator();
 
     make_engine(renderer, texture_creator, ttf_context, event_pump)
 }
 
-#[inline]
-fn init_sdl_mixer() {
-    sdl2::mixer::open_audio(44_100, sdl2::mixer::AUDIO_S16LSB, 2, 1024).unwrap();
-    sdl2::mixer::allocate_channels(32);
-}
 
 pub fn log_system_info() -> String {
     format!(
         r#"System info:
   SDL2 [{}]
   SDL2 image [{}]
-  SDL2 mixer [{}]
   SDL2 ttf [{}]"#,
         sdl2::version::version(),
         sdl2::image::get_linked_version(),
-        sdl2::mixer::get_linked_version(),
         sdl2::ttf::get_linked_version()
     )
 }
