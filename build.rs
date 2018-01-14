@@ -4,6 +4,7 @@ use std::path::PathBuf;
 fn main() {
     copy_runtimes_libs();
     generate_atlas_struct();
+    generate_alto_buffer_struct()
 }
 
 fn copy_runtimes_libs() {
@@ -91,6 +92,78 @@ impl Atlas{
             format!(
                 "    tex_{}: texture_creator.load_texture(\"./assets/tiles/{}\").expect(\"Could not load texture: {} !\"),\n",
                 f.trim_right_matches(".png"),
+                f,
+                f
+            ).as_bytes(),
+        ).unwrap();
+    }
+
+    file.write_all(
+        b"}
+    }
+}
+",
+    ).unwrap();
+}
+
+
+
+
+
+fn generate_alto_buffer_struct() {
+    use std::fs::File;
+    use std::io::Write;
+    use std::path::Path;
+    let mut assets = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+
+    assets.pop();
+    assets.push("assets");
+    assets.push("sounds");
+
+    let o_dir = env::var("OUT_DIR").unwrap();
+    let dest_path = Path::new(&o_dir).join("alto.rs");
+    let mut file = File::create(&dest_path).unwrap();
+
+    if !assets.exists() {
+        file.write_all(b"pub struct AudioResources{}").unwrap();
+        return;
+    }
+
+    file.write_all(
+        b"
+use std::sync::Arc;
+use alto::{Buffer, Context};
+use super::alto_utils::load_buffer_from_ogg_file;
+
+pub struct AudioResources{
+",
+    ).unwrap();
+
+    let names: Vec<String> = std::fs::read_dir(assets)
+        .expect("Can't read assets/sounds dir")
+        .map(|x| x.unwrap().file_name().into_string().unwrap())
+        .collect();
+
+    for f in names.iter() {
+        file.write_all(
+            format!("    pub buf_{}: Arc<Buffer>,\n", f.trim_right_matches(".ogg")).as_bytes(),
+        ).unwrap();
+    }
+
+    // Constructor
+    file.write_all(
+        b"}
+impl AudioResources{
+    pub fn new(context: &Context) -> Self{
+        AudioResources{
+",
+    ).unwrap();
+
+    for f in names {
+        file.write_all(
+            format!(
+                "    buf_{}: Arc::new(load_buffer_from_ogg_file(\"./assets/sounds/{}\", context).expect(\"Could not load ogg: {} !\")),\n",
+                f.trim_right_matches(".ogg"),
                 f,
                 f
             ).as_bytes(),
