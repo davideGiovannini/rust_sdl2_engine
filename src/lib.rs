@@ -91,7 +91,7 @@ impl<'window> EngineBuilder<'window> {
     where
         Scene: GameScene + FromEngine,
     {
-        if let Err(error) = engine::run_engine::<Scene>(self){
+        if let Err(error) = engine::run_engine::<Scene>(self) {
             println!("{:?}", error)
         }
     }

@@ -106,10 +106,6 @@ impl Atlas{
     ).unwrap();
 }
 
-
-
-
-
 fn generate_alto_buffer_struct() {
     use std::fs::File;
     use std::io::Write;
@@ -146,7 +142,10 @@ pub struct AudioResources{
 
     for f in names.iter() {
         file.write_all(
-            format!("    pub buf_{}: Arc<Buffer>,\n", f.trim_right_matches(".ogg")).as_bytes(),
+            format!(
+                "    pub buf_{}: Arc<Buffer>,\n",
+                f.trim_right_matches(".ogg")
+            ).as_bytes(),
         ).unwrap();
     }
 
