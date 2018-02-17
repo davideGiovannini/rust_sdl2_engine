@@ -6,12 +6,16 @@ extern crate failure;
 pub extern crate alto;
 pub extern crate lewton;
 
+#[macro_use]
+pub extern crate imgui;
+
 use sdl2::pixels::Color;
 
 mod engine;
 mod fps_counter;
 mod game_controllers;
 mod opengl;
+mod imgui_backend;
 mod post_processing;
 mod sdl2_utils;
 pub mod alto_utils;

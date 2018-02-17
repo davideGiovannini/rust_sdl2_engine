@@ -4,7 +4,7 @@ pub mod game;
 
 use alto;
 
-use failure::{Error, err_msg};
+use failure::{err_msg, Error};
 
 use sdl2::ttf::Sdl2TtfContext;
 use sdl2::event::Event;
@@ -20,6 +20,10 @@ use fps_counter::FpsCounter;
 use game_controllers::GameControllerManager;
 
 use super::sdl2_utils;
+
+use imgui::ImGui;
+use imgui_backend;
+use opengl::log_messages;
 
 pub struct Engine {
     pub renderer: WindowCanvas,
@@ -43,6 +47,12 @@ where
         options.logical_size,
     )?;
 
+    let mut imgui = ImGui::init();
+    imgui_backend::configure_keys(&mut imgui);
+
+    let mut imgui_renderer =
+        imgui_backend::Renderer::init(&mut imgui).expect("Failed to initialize imgui_renderer");
+
     let mut fps_counter = FpsCounter::new();
 
     let mut game_controller_manager = GameControllerManager::new();
@@ -57,6 +67,8 @@ where
 
     let clear_color = options.clear_color;
 
+    let mut im_show_test_window = true;
+
     'running: loop {
         let (should_wait, maybe_fps, delta_time) = fps_counter.tick();
         if should_wait {
@@ -67,8 +79,11 @@ where
             let title = format!("{}: {} fps", options.window_title, fps);
             window.set_title(&title)?;
         }
+
         // EVENT HANDLING
         for event in engine.event_pump.poll_iter() {
+            imgui_backend::process_event(&mut imgui, &event);
+
             match event {
                 Event::Quit { .. } => break 'running,
                 Event::ControllerDeviceAdded { which, .. } => {
@@ -83,6 +98,13 @@ where
                 }
             }
         }
+
+        imgui_backend::process_event_state(&mut imgui, &engine.event_pump);
+
+        let size_points = engine.renderer.window().size();
+        let size_pixels = engine.renderer.window().drawable_size();
+        let ui = imgui.frame(size_points, size_pixels, 0.016);
+
         // LOGIC
         let keys_snapshot = engine
             .event_pump
@@ -139,13 +161,19 @@ where
             _ => {}
         }
 
+        ui.show_test_window(&mut im_show_test_window);
         // RENDERING
         engine.renderer.set_draw_color(clear_color);
         engine.renderer.clear();
 
         game_stack.last_mut().unwrap().render(&context, &mut engine);
 
+        imgui_renderer.render(ui).unwrap();
+
         engine.renderer.present();
+
+        #[cfg(debug_assertions)]
+        log_messages();
     }
     // Close up
     Ok(())
@@ -157,7 +185,6 @@ pub fn make_engine(
     ttf_context: Sdl2TtfContext,
     event_pump: EventPump,
 ) -> Result<Engine, Error> {
-
     let alto_context = super::alto_utils::initialize_context()?;
 
     Ok(Engine {

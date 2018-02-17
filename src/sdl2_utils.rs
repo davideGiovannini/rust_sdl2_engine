@@ -7,7 +7,7 @@ use gl;
 use engine::make_engine;
 use Engine;
 
-use failure::{Error, err_msg};
+use failure::{err_msg, Error};
 
 #[inline]
 pub fn initialize_engine(
@@ -34,13 +34,17 @@ pub fn initialize_engine(
     let mut renderer = window
         .into_canvas()
         .accelerated()
-        .index(opengl::find_sdl_gl_driver().ok_or(err_msg("Could not find sdl gl driver"))?)
+        .index(opengl::find_sdl_gl_driver().ok_or_else(|| err_msg("Could not find sdl gl driver"))?)
         .target_texture()
         .build()
         .unwrap();
 
     let gl_attr = video_subsystem.gl_attr();
     gl_attr.set_context_profile(sdl2::video::GLProfile::Core);
+
+    gl_attr.set_stencil_size(8);
+    gl_attr.set_depth_size(24);
+
     // Set the context into debug mode
     #[cfg(debug_assertions)]
     gl_attr.set_context_flags().debug().set();
@@ -48,7 +52,10 @@ pub fn initialize_engine(
     gl_attr.set_context_version(3, 1);
 
     gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
-    renderer.window().gl_set_context_to_current().map_err(err_msg)?;
+    renderer
+        .window()
+        .gl_set_context_to_current()
+        .map_err(err_msg)?;
 
     #[cfg(debug_assertions)]
     println!(
@@ -68,7 +75,6 @@ pub fn initialize_engine(
 
     make_engine(renderer, texture_creator, ttf_context, event_pump)
 }
-
 
 pub fn log_system_info() -> String {
     format!(

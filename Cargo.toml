@@ -1,11 +1,16 @@
 [package]
-authors = ["Davide Giovannini <giovannini.davide90@gmail.com>"]
-build = "build.rs"
 name = "sdl2_engine"
 version = "0.1.0"
+authors = ["Davide Giovannini <giovannini.davide90@gmail.com>"]
+build = "build.rs"
+
 
 [dependencies]
-gl = "0.7.0"
+gl = "0.10.0"
+# imgui = "0.0.18"
+# Custom version of imgui-rs to have the ability to set clipboard functions
+imgui = { git = 'https://github.com/davideGiovannini/imgui-rs' }
+
 alto = "3.0.1"
 lewton = "0.7.0"
 failure = "0.1.1"

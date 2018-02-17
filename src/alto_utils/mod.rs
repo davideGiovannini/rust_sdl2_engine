@@ -1,4 +1,3 @@
-
 use failure::Error;
 
 use alto::{Alto, Buffer, Context, Mono, Stereo, StreamingSource};
@@ -17,19 +16,17 @@ pub fn initialize_context() -> Result<Context, Error> {
     Ok(device.new_context(None)?) // Creates a default context
 }
 
-
 const NUM_BUFFER_POOL: i32 = 100;
 
-
 /// This could be useful for music, or other long audio files to reduce memory footprint
-pub struct StreamingOggSource{
+pub struct StreamingOggSource {
     sample_rate: i32,
     streaming_source: StreamingSource,
     streaming_reader: OggStreamReader<File>,
 }
 
-impl StreamingOggSource{
-    pub fn new(file_path: &str, context: Context) -> Result<Self, Error>{
+impl StreamingOggSource {
+    pub fn new(file_path: &str, context: &Context) -> Result<Self, Error> {
         let f = File::open(file_path)?;
 
         // Prepare the reading
@@ -41,42 +38,46 @@ impl StreamingOggSource{
 
         if srr.ident_hdr.audio_channels > 2 {
             // the openal crate can't process these many channels directly
-            println!("Stream error: {} channels are too many!", srr.ident_hdr.audio_channels);
+            println!(
+                "Stream error: {} channels are too many!",
+                srr.ident_hdr.audio_channels
+            );
         }
 
-        Ok(StreamingOggSource{
+        Ok(StreamingOggSource {
             sample_rate,
             streaming_reader: srr,
-            streaming_source: str_src
+            streaming_source: str_src,
         })
     }
 
-
-    pub fn stream(&mut self, context: &Context) -> Result<(), Error>{
+    pub fn stream(&mut self, context: &Context) -> Result<(), Error> {
         if let Some(pck_samples) = (self.streaming_reader.read_dec_packet_itl())? {
-
-            let buf = if self.streaming_source.buffers_queued() < NUM_BUFFER_POOL{
-                 match self.streaming_reader.ident_hdr.audio_channels {
-                    1 => context.new_buffer::<Mono<i16>,_>(&pck_samples, self.sample_rate),
-                    2 => context.new_buffer::<Stereo<i16>,_>(&pck_samples, self.sample_rate),
+            let buf = if self.streaming_source.buffers_queued() < NUM_BUFFER_POOL {
+                match self.streaming_reader.ident_hdr.audio_channels {
+                    1 => context.new_buffer::<Mono<i16>, _>(&pck_samples, self.sample_rate),
+                    2 => context.new_buffer::<Stereo<i16>, _>(&pck_samples, self.sample_rate),
                     n => panic!("unsupported number of channels: {}", n),
                 }?
-            }else{
+            } else {
                 let mut buf = self.streaming_source.unqueue_buffer()?;
 
-                    match self.streaming_reader.ident_hdr.audio_channels {
-                        1 => {buf.set_data::<Mono<i16>, &[i16]>(&pck_samples, self.sample_rate)?;},
-                        2 => {buf.set_data::<Stereo<i16>, &[i16]>(&pck_samples, self.sample_rate)?;},
-                        n => panic!("unsupported number of channels: {}", n),
+                match self.streaming_reader.ident_hdr.audio_channels {
+                    1 => {
+                        buf.set_data::<Mono<i16>, &[i16]>(&pck_samples, self.sample_rate)?;
                     }
-                    buf
+                    2 => {
+                        buf.set_data::<Stereo<i16>, &[i16]>(&pck_samples, self.sample_rate)?;
+                    }
+                    n => panic!("unsupported number of channels: {}", n),
+                }
+                buf
             };
             self.streaming_source.queue_buffer(buf)?;
         }
         Ok(())
     }
 }
-
 
 pub fn load_buffer_from_ogg_file(file_path: &str, context: &Context) -> Result<Buffer, Error> {
     let f = File::open(file_path)?;
@@ -88,19 +89,21 @@ pub fn load_buffer_from_ogg_file(file_path: &str, context: &Context) -> Result<B
 
     if srr.ident_hdr.audio_channels > 2 {
         // the openal crate can't process these many channels directly
-        println!("Stream error: {} channels are too many!", srr.ident_hdr.audio_channels);
+        println!(
+            "Stream error: {} channels are too many!",
+            srr.ident_hdr.audio_channels
+        );
     }
-
 
     let mut buffer_data = Vec::new();
 
-    while let Some(pck_samples) = srr.read_dec_packet_itl()?{
+    while let Some(pck_samples) = srr.read_dec_packet_itl()? {
         buffer_data.extend(pck_samples);
     }
 
     let buffer = match srr.ident_hdr.audio_channels {
-        1 => context.new_buffer::<Mono<i16>,_>(&buffer_data, sample_rate),
-        2 => context.new_buffer::<Stereo<i16>,_>(&buffer_data, sample_rate),
+        1 => context.new_buffer::<Mono<i16>, _>(&buffer_data, sample_rate),
+        2 => context.new_buffer::<Stereo<i16>, _>(&buffer_data, sample_rate),
         n => panic!("unsupported number of channels: {}", n),
     }?;
     Ok(buffer)

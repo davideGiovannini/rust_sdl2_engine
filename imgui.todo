@@ -1,0 +1,17 @@
+
+* [] use want_keyboard/mouse captured and avoid passing the event to game scenes when it is true
+* [] finish handling correctly input
+  * [] check that scale mouse coordinates correctly
+  * [x] text input (writing in editboxes)
+  * [x] mouse wheel scrolling
+  * [x] handle clipboard
+
+
+ * INVESTIGATE GRAPHIC GLITCHES
+ * [x] investigate fucked up scrollbar
+ * [x] investigate scissor test ?
+
+   drawing or not drawing certain elements affect others ( z order, scissors, or smt else ?)
+
+
+    RESOLUTION: when passing the idx offset I should have multiplied the count by idx size (short => 2 bytes)
