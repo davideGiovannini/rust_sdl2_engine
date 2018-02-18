@@ -49,6 +49,7 @@ where
 
     let mut imgui = ImGui::init();
     imgui_backend::configure_keys(&mut imgui);
+    imgui.set_font_global_scale(options.imgui_font_scale);
 
     let mut imgui_renderer =
         imgui_backend::Renderer::init(&mut imgui).expect("Failed to initialize imgui_renderer");
@@ -66,8 +67,6 @@ where
     let mut keys_down: HashSet<Scancode> = Default::default();
 
     let clear_color = options.clear_color;
-
-    let mut im_show_test_window = true;
 
     'running: loop {
         let (should_wait, maybe_fps, delta_time) = fps_counter.tick();
@@ -114,60 +113,61 @@ where
         let newly_pressed = &keys_snapshot - &keys_down;
         keys_down.clone_from(&keys_snapshot);
 
-        let context = EngineContext::new(
-            keys_snapshot,
-            newly_pressed,
-            delta_time,
-            fps_counter.elapsed(),
-            game_controller_manager.snapshot(),
-        );
-        let action = game_stack.last_mut().unwrap().logic(&context, &engine);
-        match action {
-            EngineAction::Quit => break 'running,
-            EngineAction::ToggleFullScreen => {
-                use sdl2::video::FullscreenType;
-                let window = engine.renderer.window_mut();
-                let status = if options.fullscreen {
-                    FullscreenType::Off
-                } else {
-                    FullscreenType::Desktop
-                };
-                window.set_fullscreen(status).map_err(err_msg)?;
-                options.fullscreen = !options.fullscreen;
-            }
-            EngineAction::PopScene => {
-                drop(game_stack.pop());
-                if let Some(scene) = game_stack.last_mut() {
-                    scene.on_resume();
-                    continue 'running;
-                } else {
-                    break 'running;
+        {
+            let context = EngineContext::new(
+                keys_snapshot,
+                newly_pressed,
+                delta_time,
+                fps_counter.elapsed(),
+                game_controller_manager.snapshot(),
+                &ui,
+            );
+            let action = game_stack.last_mut().unwrap().logic(&context, &engine);
+            match action {
+                EngineAction::Quit => break 'running,
+                EngineAction::ToggleFullScreen => {
+                    use sdl2::video::FullscreenType;
+                    let window = engine.renderer.window_mut();
+                    let status = if options.fullscreen {
+                        FullscreenType::Off
+                    } else {
+                        FullscreenType::Desktop
+                    };
+                    window.set_fullscreen(status).map_err(err_msg)?;
+                    options.fullscreen = !options.fullscreen;
                 }
+                EngineAction::PopScene => {
+                    drop(game_stack.pop());
+                    if let Some(scene) = game_stack.last_mut() {
+                        scene.on_resume();
+                        continue 'running;
+                    } else {
+                        break 'running;
+                    }
+                }
+                EngineAction::PushScene(mut get_scene) => {
+                    game_stack.last_mut().unwrap().on_pause();
+                    let mut next_scene = get_scene(&engine);
+                    next_scene.set_up();
+                    game_stack.push(next_scene);
+                    continue 'running;
+                }
+                EngineAction::SwitchToScene(mut get_scene) => {
+                    drop(game_stack.pop());
+                    let mut next_scene = get_scene(&engine);
+                    next_scene.set_up();
+                    game_stack.push(next_scene);
+                    continue 'running;
+                }
+                _ => {}
             }
-            EngineAction::PushScene(mut get_scene) => {
-                game_stack.last_mut().unwrap().on_pause();
-                let mut next_scene = get_scene(&engine);
-                next_scene.set_up();
-                game_stack.push(next_scene);
-                continue 'running;
-            }
-            EngineAction::SwitchToScene(mut get_scene) => {
-                drop(game_stack.pop());
-                let mut next_scene = get_scene(&engine);
-                next_scene.set_up();
-                game_stack.push(next_scene);
-                continue 'running;
-            }
-            _ => {}
+
+            // RENDERING
+            engine.renderer.set_draw_color(clear_color);
+            engine.renderer.clear();
+
+            game_stack.last_mut().unwrap().render(&context, &mut engine);
         }
-
-        ui.show_test_window(&mut im_show_test_window);
-        // RENDERING
-        engine.renderer.set_draw_color(clear_color);
-        engine.renderer.clear();
-
-        game_stack.last_mut().unwrap().render(&context, &mut engine);
-
         imgui_renderer.render(ui).unwrap();
 
         engine.renderer.present();

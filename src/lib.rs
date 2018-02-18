@@ -53,6 +53,7 @@ pub struct EngineBuilder<'window> {
     logical_size: Option<(u32, u32)>,
     fullscreen: bool,
     clear_color: Color,
+    imgui_font_scale: f32,
 }
 
 impl Engine {
@@ -63,6 +64,7 @@ impl Engine {
             logical_size: None,
             clear_color: CLEAR_COLOR,
             fullscreen: false,
+            imgui_font_scale: 1.5,
         }
     }
 }
@@ -87,6 +89,11 @@ impl<'window> EngineBuilder<'window> {
 
     pub fn with_fullscreen(&mut self, fullscreen: bool) -> &mut Self {
         self.fullscreen = fullscreen;
+        self
+    }
+
+    pub fn with_imgui_font_scale(&mut self, font_scale: f32) -> &mut Self {
+        self.imgui_font_scale = font_scale;
         self
     }
 
