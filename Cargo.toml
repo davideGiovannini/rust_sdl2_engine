@@ -12,7 +12,7 @@ gl = "0.10.0"
 imgui = { git = 'https://github.com/davideGiovannini/imgui-rs' }
 
 alto = "3.0.1"
-lewton = "0.7.0"
+lewton = "0.8.0"
 failure = "0.1.1"
 
 [dependencies.sdl2]
