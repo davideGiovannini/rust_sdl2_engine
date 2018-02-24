@@ -41,7 +41,7 @@ pub fn initialize_engine(
 
     let gl_attr = video_subsystem.gl_attr();
     gl_attr.set_context_profile(sdl2::video::GLProfile::Core);
-
+    gl_attr.set_framebuffer_srgb_compatible(true);
     gl_attr.set_stencil_size(8);
     gl_attr.set_depth_size(24);
 
