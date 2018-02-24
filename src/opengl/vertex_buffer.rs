@@ -1,3 +1,6 @@
+#![allow(unused)]
+// TODO remove this annotation and actually use this stuff
+
 use gl;
 use gl::types::*;
 

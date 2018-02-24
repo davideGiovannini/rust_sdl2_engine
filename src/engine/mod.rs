@@ -19,6 +19,8 @@ use {AnyGameScene, EngineAction, EngineBuilder, EngineContext, FromEngine, GameS
 use fps_counter::FpsCounter;
 use game_controllers::GameControllerManager;
 
+use super::resources_cache::Resources;
+
 use super::sdl2_utils;
 
 use imgui::ImGui;
@@ -27,8 +29,8 @@ use opengl::log_messages;
 
 pub struct Engine {
     pub renderer: WindowCanvas,
-    pub texture_creator: TextureCreator<WindowContext>,
     pub ttf_context: Sdl2TtfContext,
+    pub resources: Resources,
     pub alto_context: alto::Context,
     event_pump: EventPump,
 }
@@ -58,7 +60,7 @@ where
 
     let mut game_controller_manager = GameControllerManager::new();
 
-    let mut game: AnyGameScene = Box::new(Scene::init(&engine));
+    let mut game: AnyGameScene = Box::new(Scene::init(&mut engine));
 
     game.set_up();
 
@@ -146,14 +148,14 @@ where
                 }
                 EngineAction::PushScene(mut get_scene) => {
                     game_stack.last_mut().unwrap().on_pause();
-                    let mut next_scene = get_scene(&engine);
+                    let mut next_scene = get_scene(&mut engine);
                     next_scene.set_up();
                     game_stack.push(next_scene);
                     continue 'running;
                 }
                 EngineAction::SwitchToScene(mut get_scene) => {
                     drop(game_stack.pop());
-                    let mut next_scene = get_scene(&engine);
+                    let mut next_scene = get_scene(&mut engine);
                     next_scene.set_up();
                     game_stack.push(next_scene);
                     continue 'running;
@@ -188,9 +190,9 @@ pub fn make_engine(
 
     Ok(Engine {
         renderer,
-        texture_creator,
         ttf_context,
         event_pump,
-        alto_context,
+        alto_context: alto_context.clone(),
+        resources: Resources::new(texture_creator, alto_context.clone()),
     })
 }

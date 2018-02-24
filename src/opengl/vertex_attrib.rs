@@ -16,6 +16,8 @@ impl VertexAttribArray {
         VertexAttribArray { loc }
     }
 
+    // TODO remove this annotation and actually use this stuff
+    #[allow(unused)]
     pub unsafe fn enable(&self) {
         gl::EnableVertexAttribArray(self.loc);
     }
@@ -30,6 +32,8 @@ impl VertexAttribArray {
         gl::VertexAttribPointer(self.loc, size, gl_type, gl::FALSE, stride, offset);
     }
 
+    // TODO remove this annotation and actually use this stuff
+    #[allow(unused)]
     pub unsafe fn disable(&self) {
         gl::DisableVertexAttribArray(self.loc);
     }

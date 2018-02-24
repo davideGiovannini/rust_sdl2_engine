@@ -21,5 +21,5 @@ pub trait GameScene {
 }
 
 pub trait FromEngine {
-    fn init(engine: &Engine) -> Self;
+    fn init(engine: &mut Engine) -> Self;
 }

@@ -5,7 +5,7 @@ use gl::types::*;
 
 use self::opengl::*;
 
-use std::{ffi, ptr};
+use std::ptr;
 
 use sdl2::render::Texture;
 

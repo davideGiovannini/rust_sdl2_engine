@@ -5,8 +5,8 @@ pub enum EngineAction {
     Nothing,
     ToggleFullScreen,
     PopScene,
-    PushScene(Box<FnMut(&Engine) -> AnyGameScene>),
-    SwitchToScene(Box<FnMut(&Engine) -> AnyGameScene>),
+    PushScene(Box<FnMut(&mut Engine) -> AnyGameScene>),
+    SwitchToScene(Box<FnMut(&mut Engine) -> AnyGameScene>),
     Quit,
 }
 

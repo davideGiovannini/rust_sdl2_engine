@@ -18,13 +18,22 @@ impl BitmapFont {
         }
     }
 
-    pub fn set_color(&mut self, r: u8, g: u8, b: u8) {
-        self.texture.set_color_mod(r, g, b);
+    pub fn set_color(&self, red: u8, green: u8, blue: u8) {
+        unsafe {
+            use sdl2::sys;
+            use sdl2::get_error;
+
+            let raw = self.texture.raw();
+            let ret = sys::SDL_SetTextureColorMod(raw, red, green, blue);
+            if ret != 0 {
+                panic!("Error setting color mod: {}", get_error())
+            }
+        }
     }
 
     // TODO improve this
     // TODO at least during debug check that the char are in the correct range (can be handled)
-    pub fn render_text(&mut self, text: &str, point: (i32, i32), renderer: &mut WindowCanvas) {
+    pub fn render_text(&self, text: &str, point: (i32, i32), renderer: &mut WindowCanvas) {
         let width = self.texture.query().width;
         let width = width - width % self.char_width;
 
@@ -62,12 +71,7 @@ impl BitmapFont {
 
     // TODO add other functions (to print text centered or right aligned)
 
-    pub fn render_text_centered(
-        &mut self,
-        text: &str,
-        point: (i32, i32),
-        renderer: &mut WindowCanvas,
-    ) {
+    pub fn render_text_centered(&self, text: &str, point: (i32, i32), renderer: &mut WindowCanvas) {
         let mut n_lines = 0;
         let mut largest_line = 0;
         for line in text.lines() {

@@ -21,6 +21,8 @@ mod sdl2_utils;
 pub mod alto_utils;
 pub mod prelude;
 
+pub mod resources_cache;
+
 #[macro_use]
 mod common_macros;
 

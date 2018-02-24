@@ -1,4 +1,3 @@
-
 pub use imgui::Ui;
 pub use sdl2::pixels::Color;
 pub use sdl2::keyboard::Scancode;
