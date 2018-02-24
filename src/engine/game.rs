@@ -1,6 +1,7 @@
 use {Engine, EngineAction, EngineContext};
 
 use sdl2::event::Event;
+use imgui::Ui;
 
 pub type AnyGameScene = Box<GameScene>;
 
@@ -9,7 +10,7 @@ pub trait GameScene {
 
     fn process_event(&mut self, _: &Event) {}
 
-    fn logic(&mut self, context: &EngineContext, engine: &Engine) -> EngineAction;
+    fn logic(&mut self, context: &EngineContext, engine: &Engine, ui: &Ui) -> EngineAction;
 
     fn render(&mut self, context: &EngineContext, engine: &mut Engine);
 

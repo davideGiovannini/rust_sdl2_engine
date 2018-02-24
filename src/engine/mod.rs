@@ -120,9 +120,8 @@ where
                 delta_time,
                 fps_counter.elapsed(),
                 game_controller_manager.snapshot(),
-                &ui,
             );
-            let action = game_stack.last_mut().unwrap().logic(&context, &engine);
+            let action = game_stack.last_mut().unwrap().logic(&context, &engine, &ui);
             match action {
                 EngineAction::Quit => break 'running,
                 EngineAction::ToggleFullScreen => {

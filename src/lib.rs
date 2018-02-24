@@ -19,6 +19,7 @@ mod imgui_backend;
 mod post_processing;
 mod sdl2_utils;
 pub mod alto_utils;
+pub mod prelude;
 
 #[macro_use]
 mod common_macros;
