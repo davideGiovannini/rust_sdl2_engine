@@ -117,21 +117,18 @@ fn generate_alto_buffer_struct() {
     assets.push("sounds");
 
     let o_dir = env::var("OUT_DIR").unwrap();
-    let dest_path = Path::new(&o_dir).join("alto.rs");
+    let dest_path = Path::new(&o_dir).join("audio_file_keys.rs");
     let mut file = File::create(&dest_path).unwrap();
 
     if !assets.exists() {
-        file.write_all(b"pub struct AudioResources{}").unwrap();
+        file.write_all(b"").unwrap();
         return;
     }
 
     file.write_all(
         b"
-use std::sync::Arc;
-use alto::{Buffer, Context};
-use super::alto_utils::load_buffer_from_ogg_file;
+use resources_cache::PathKey;
 
-pub struct AudioResources{
 ",
     ).unwrap();
 
@@ -140,39 +137,13 @@ pub struct AudioResources{
         .map(|x| x.unwrap().file_name().into_string().unwrap())
         .collect();
 
-    for f in names.iter() {
-        file.write_all(
-            format!(
-                "    pub buf_{}: Arc<Buffer>,\n",
-                f.trim_right_matches(".ogg")
-            ).as_bytes(),
-        ).unwrap();
-    }
-
-    // Constructor
-    file.write_all(
-        b"}
-impl AudioResources{
-    pub fn new(context: &Context) -> Self{
-        AudioResources{
-",
-    ).unwrap();
-
     for f in names {
         file.write_all(
             format!(
-                "    buf_{}: Arc::new(load_buffer_from_ogg_file(\"./assets/sounds/{}\", context).expect(\"Could not load ogg: {} !\")),\n",
-                f.trim_right_matches(".ogg"),
+                "pub const AUDIO_{}: PathKey = PathKey(\"./assets/sounds/{}\");\n",
+                f.trim_right_matches(".ogg").to_uppercase(),
                 f,
-                f
             ).as_bytes(),
         ).unwrap();
     }
-
-    file.write_all(
-        b"}
-    }
-}
-",
-    ).unwrap();
 }

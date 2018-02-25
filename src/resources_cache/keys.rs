@@ -9,7 +9,7 @@ pub trait CacheKey<Target> {
 
 /// Key made of a path
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd)]
-pub struct PathKey(pub String);
+pub struct PathKey(pub &'static str);
 
 impl CacheKey<Buffer> for PathKey {
     type Target = Buffer;
@@ -19,9 +19,9 @@ impl CacheKey<Texture> for PathKey {
     type Target = Texture;
 }
 
-impl<'a> From<&'a str> for PathKey {
-    fn from(s: &str) -> Self {
-        PathKey(s.to_string())
+impl From<&'static str> for PathKey {
+    fn from(s: &'static str) -> Self {
+        PathKey(s)
     }
 }
 

@@ -1,9 +1,11 @@
-use sdl2::render::{Texture, TextureCreator};
+use sdl2::render::{Texture, TextureAccess, TextureCreator, TextureValueError};
+use sdl2::surface::SurfaceRef;
 use sdl2::video::WindowContext;
+use sdl2::pixels::PixelFormatEnum;
+use sdl2::image::LoadTexture;
+
 use alto;
 use alto_utils::load_buffer_from_ogg_file;
-
-use sdl2::image::LoadTexture;
 
 use font::BitmapFont;
 
@@ -37,6 +39,69 @@ impl Resources {
             bitmap_font_cache: Default::default(),
             audio_buffer_cache: Default::default(),
         }
+    }
+
+    pub fn default_pixel_format(&self) -> PixelFormatEnum {
+        self.texture_creator.default_pixel_format()
+    }
+    pub fn create_texture<F>(
+        &self,
+        format: F,
+        access: TextureAccess,
+        width: u32,
+        height: u32,
+    ) -> Result<Texture, TextureValueError>
+    where
+        F: Into<Option<PixelFormatEnum>>,
+    {
+        self.texture_creator
+            .create_texture(format, access, width, height)
+    }
+
+    pub fn create_texture_static<F>(
+        &self,
+        format: F,
+        width: u32,
+        height: u32,
+    ) -> Result<Texture, TextureValueError>
+    where
+        F: Into<Option<PixelFormatEnum>>,
+    {
+        self.texture_creator
+            .create_texture_static(format, width, height)
+    }
+
+    pub fn create_texture_streaming<F>(
+        &self,
+        format: F,
+        width: u32,
+        height: u32,
+    ) -> Result<Texture, TextureValueError>
+    where
+        F: Into<Option<PixelFormatEnum>>,
+    {
+        self.texture_creator
+            .create_texture_streaming(format, width, height)
+    }
+
+    pub fn create_texture_target<F>(
+        &self,
+        format: F,
+        width: u32,
+        height: u32,
+    ) -> Result<Texture, TextureValueError>
+    where
+        F: Into<Option<PixelFormatEnum>>,
+    {
+        self.texture_creator
+            .create_texture_target(format, width, height)
+    }
+
+    pub fn create_texture_from_surface<S: AsRef<SurfaceRef>>(
+        &self,
+        surface: S,
+    ) -> Result<Texture, TextureValueError> {
+        self.texture_creator.create_texture_from_surface(surface)
     }
 }
 

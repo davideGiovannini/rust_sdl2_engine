@@ -13,6 +13,7 @@ use sdl2::video::WindowContext;
 use std::collections::HashSet;
 use sdl2::keyboard::Scancode;
 use sdl2::EventPump;
+use sdl2::pixels::Color;
 
 use {AnyGameScene, EngineAction, EngineBuilder, EngineContext, FromEngine, GameScene};
 
@@ -32,6 +33,7 @@ pub struct Engine {
     pub ttf_context: Sdl2TtfContext,
     pub resources: Resources,
     pub alto_context: alto::Context,
+    pub clear_color: Color,
     event_pump: EventPump,
 }
 
@@ -68,7 +70,7 @@ where
 
     let mut keys_down: HashSet<Scancode> = Default::default();
 
-    let clear_color = options.clear_color;
+    engine.clear_color = options.clear_color;
 
     'running: loop {
         let (should_wait, maybe_fps, delta_time) = fps_counter.tick();
@@ -164,7 +166,7 @@ where
             }
 
             // RENDERING
-            engine.renderer.set_draw_color(clear_color);
+            engine.renderer.set_draw_color(engine.clear_color);
             engine.renderer.clear();
 
             game_stack.last_mut().unwrap().render(&context, &mut engine);
@@ -193,6 +195,7 @@ pub fn make_engine(
         ttf_context,
         event_pump,
         alto_context: alto_context.clone(),
+        clear_color: Color::RGB(0,0,0),
         resources: Resources::new(texture_creator, alto_context.clone()),
     })
 }
