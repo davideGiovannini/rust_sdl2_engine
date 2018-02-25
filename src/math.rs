@@ -16,9 +16,43 @@ pub fn lerp_color(color0: (u8, u8, u8, u8), color1: (u8, u8, u8, u8), t: f32) ->
     )
 }
 
+pub fn format_bytes(num: f64) -> String {
+    if num == 0_f64 {
+        return "0 bytes".to_string();
+    }
+
+    use std::cmp;
+    let units = ["bytes", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    let delimiter = 1000_f64;
+    let exponent = cmp::min(
+        (num.ln() / delimiter.ln()).floor() as i32,
+        (units.len() - 1) as i32,
+    );
+    let pretty_bytes = format!("{:.2}", num / delimiter.powi(exponent))
+        .parse::<f64>()
+        .unwrap() * 1_f64;
+    let unit = units[exponent as usize];
+    format!("{} {}", pretty_bytes, unit)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn test_f_bytes() {
+        assert_eq!(&format_bytes(0_f64), "0 bytes");
+        assert_eq!(&format_bytes(8_f64), "8 bytes");
+        assert_eq!(&format_bytes(80_f64), "80 bytes");
+        assert_eq!(&format_bytes(800_f64), "800 bytes");
+        assert_eq!(&format_bytes(8000_f64), "8 kB");
+        assert_eq!(&format_bytes(80000_f64), "80 kB");
+        assert_eq!(&format_bytes(800000_f64), "800 kB");
+        assert_eq!(&format_bytes(8000000_f64), "8 MB");
+        assert_eq!(&format_bytes(80000000_f64), "80 MB");
+        assert_eq!(&format_bytes(800000000_f64), "800 MB");
+        assert_eq!(&format_bytes(8000000000_f64), "8 GB");
+    }
 
     #[test]
     fn test_lerp() {

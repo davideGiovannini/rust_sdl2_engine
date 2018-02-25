@@ -91,6 +91,8 @@ where
         key_closure: fn(&K) -> &str,
         size_closure: fn(&Arc<V>) -> usize,
     ) {
+        use math::format_bytes;
+
         if ui.collapsing_header(im_str!("{} entries", self.size()))
             .open_on_arrow(true)
             .open_on_double_click(true)
@@ -99,7 +101,7 @@ where
             ui.columns(4, im_str!("{}_entries", name), true);
             ui.text(im_str!("Key"));
             ui.next_column();
-            ui.text(im_str!("Vram"));
+            ui.text(im_str!("Size"));
             ui.next_column();
             ui.text(im_str!("Strong refs"));
             ui.next_column();
@@ -113,7 +115,13 @@ where
 
                 let size = size_closure(value);
 
-                ui.text_colored((0.75, 0.75, 1.0, 1.0), im_str!("{} bytes", size));
+                ui.text_colored(
+                    (0.75, 0.75, 1.0, 1.0),
+                    im_str!("{}", format_bytes(size as f64)),
+                );
+                if ui.is_item_hovered() {
+                    ui.tooltip_text(im_str!("{} bytes", size));
+                }
                 ui.next_column();
                 ui.text_colored(
                     (0.0, 1.0, 0.0, 1.0),

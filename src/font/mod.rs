@@ -18,6 +18,13 @@ impl BitmapFont {
         }
     }
 
+    pub fn vram_size(&self) -> usize {
+        let tex_query = self.texture.query();
+
+        let pixels = tex_query.width * tex_query.height;
+        tex_query.format.byte_size_of_pixels(pixels as usize)
+    }
+
     pub fn set_color(&self, red: u8, green: u8, blue: u8) {
         unsafe {
             use sdl2::sys;

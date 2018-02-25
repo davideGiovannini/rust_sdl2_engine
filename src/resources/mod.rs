@@ -47,6 +47,7 @@ impl Resources {
 
     pub fn inspect(&mut self, ui: &Ui) {
         use std::mem::size_of;
+        use math::format_bytes;
 
         let mut opened = self.inspect_window;
 
@@ -70,10 +71,17 @@ impl Resources {
                     });
 
                 ui.text(im_str!(
-                    "Using {} bytes of RAM and {} bytes of VRAM",
-                    ram_usage,
-                    vram_estimate
+                    "Using {} of RAM and {} of VRAM",
+                    format_bytes(ram_usage as f64),
+                    format_bytes(vram_estimate as f64)
                 ));
+                if ui.is_item_hovered() {
+                    ui.tooltip_text(im_str!(
+                        "{} bytes of RAM and {} bytes of VRAM",
+                        ram_usage,
+                        vram_estimate
+                    ))
+                }
 
                 self.texture_cache.inspect(
                     ui,
@@ -95,7 +103,13 @@ impl Resources {
                 let ram_estimate: usize = (self.audio_buffer_cache.into_iter())
                     .fold(0, |acc, (_, buffer)| acc + buffer.size() as usize);
 
-                ui.text(im_str!("Using {} bytes of RAM ", ram_usage + ram_estimate));
+                ui.text(im_str!(
+                    "Using {} of RAM ",
+                    format_bytes(ram_usage as f64 + ram_estimate as f64)
+                ));
+                if ui.is_item_hovered() {
+                    ui.tooltip_text(im_str!("{} bytes of RAM", ram_usage + ram_estimate))
+                }
 
                 self.audio_buffer_cache.inspect(
                     ui,
@@ -110,16 +124,27 @@ impl Resources {
                 ui.separator();
 
                 let ram_usage = size_of::<Texture>() * self.bitmap_font_cache.size();
-                let ram_estimate: usize = (self.bitmap_font_cache.into_iter())
-                    .fold(0, |acc, (_, buffer)| acc + 4 as usize);
+                let vram_estimate: usize = (self.bitmap_font_cache.into_iter())
+                    .fold(0, |acc, (_, bfont)| acc + bfont.vram_size());
 
-                ui.text(im_str!("Using {} bytes of RAM ", ram_usage + ram_estimate));
+                ui.text(im_str!(
+                    "Using {} of RAM and an estimate {} of VRAM ",
+                    format_bytes(ram_usage as f64),
+                    format_bytes(vram_estimate as f64)
+                ));
+                if ui.is_item_hovered() {
+                    ui.tooltip_text(im_str!(
+                        "{} bytes of RAM and {} bytes of VRAM",
+                        ram_usage,
+                        vram_estimate
+                    ))
+                }
 
                 self.bitmap_font_cache.inspect(
                     ui,
                     "bitmap_font_cache",
                     |key| key.0.trim_left_matches("./assets/fonts/"),
-                    |value| 3,
+                    |value| value.vram_size(),
                 );
             });
 
