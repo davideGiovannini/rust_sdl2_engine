@@ -3,8 +3,8 @@ use std::path::PathBuf;
 
 fn main() {
     copy_runtimes_libs();
-    generate_atlas_struct();
-    generate_alto_buffer_struct()
+    generate_texture_keys_consts().unwrap();
+    generate_audio_buffer_consts().unwrap();
 }
 
 fn copy_runtimes_libs() {
@@ -38,7 +38,7 @@ fn copy_runtimes_libs() {
     }
 }
 
-fn generate_atlas_struct() {
+fn generate_texture_keys_consts() -> std::io::Result<()> {
     use std::fs::File;
     use std::io::Write;
     use std::path::Path;
@@ -46,67 +46,34 @@ fn generate_atlas_struct() {
 
     assets.pop();
     assets.push("assets");
-    assets.push("tiles");
+    assets.push("textures");
 
     let o_dir = env::var("OUT_DIR").unwrap();
-    let dest_path = Path::new(&o_dir).join("atlas.rs");
-    let mut file = File::create(&dest_path).unwrap();
+    let dest_path = Path::new(&o_dir).join("texture_file_keys.rs");
+    let mut file = File::create(&dest_path)?;
 
     if !assets.exists() {
-        file.write_all(b"pub struct Atlas{}").unwrap();
-        return;
+        return file.write_all(b"");
     }
-
-    file.write_all(
-        b"use sdl2::render::Texture;
-use sdl2::render::TextureCreator;
-use sdl2::image::LoadTexture;
-use sdl2::video::WindowContext;
-
-pub struct Atlas{
-",
-    ).unwrap();
 
     let names: Vec<String> = std::fs::read_dir(assets)
-        .expect("Can't read assets/tiles dir")
+        .expect("Can't read assets/textures dir")
         .map(|x| x.unwrap().file_name().into_string().unwrap())
         .collect();
-
-    for f in names.iter() {
-        file.write_all(
-            format!("    pub tex_{}: Texture,\n", f.trim_right_matches(".png")).as_bytes(),
-        ).unwrap();
-    }
-
-    // Constructor
-    file.write_all(
-        b"}
-impl Atlas{
-    pub fn new(texture_creator: &TextureCreator<WindowContext>) -> Atlas{
-        Atlas{
-",
-    ).unwrap();
 
     for f in names {
         file.write_all(
             format!(
-                "    tex_{}: texture_creator.load_texture(\"./assets/tiles/{}\").expect(\"Could not load texture: {} !\"),\n",
-                f.trim_right_matches(".png"),
+                "pub const TEX_{}: PathKey = PathKey(\"./assets/textures/{}\");\n",
+                f.trim_right_matches(".png").to_uppercase(),
                 f,
-                f
             ).as_bytes(),
-        ).unwrap();
+        )?;
     }
-
-    file.write_all(
-        b"}
-    }
-}
-",
-    ).unwrap();
+    Ok(())
 }
 
-fn generate_alto_buffer_struct() {
+fn generate_audio_buffer_consts() -> std::io::Result<()> {
     use std::fs::File;
     use std::io::Write;
     use std::path::Path;
@@ -118,19 +85,11 @@ fn generate_alto_buffer_struct() {
 
     let o_dir = env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&o_dir).join("audio_file_keys.rs");
-    let mut file = File::create(&dest_path).unwrap();
+    let mut file = File::create(&dest_path)?;
 
     if !assets.exists() {
-        file.write_all(b"").unwrap();
-        return;
+        return file.write_all(b"");
     }
-
-    file.write_all(
-        b"
-use resources_cache::PathKey;
-
-",
-    ).unwrap();
 
     let names: Vec<String> = std::fs::read_dir(assets)
         .expect("Can't read assets/sounds dir")
@@ -144,6 +103,7 @@ use resources_cache::PathKey;
                 f.trim_right_matches(".ogg").to_uppercase(),
                 f,
             ).as_bytes(),
-        ).unwrap();
+        )?;
     }
+    Ok(())
 }

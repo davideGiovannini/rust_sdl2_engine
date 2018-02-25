@@ -20,7 +20,7 @@ use {AnyGameScene, EngineAction, EngineBuilder, EngineContext, FromEngine, GameS
 use fps_counter::FpsCounter;
 use game_controllers::GameControllerManager;
 
-use super::resources_cache::Resources;
+use super::resources::Resources;
 
 use super::sdl2_utils;
 
@@ -195,7 +195,7 @@ pub fn make_engine(
         ttf_context,
         event_pump,
         alto_context: alto_context.clone(),
-        clear_color: Color::RGB(0,0,0),
+        clear_color: Color::RGB(0, 0, 0),
         resources: Resources::new(texture_creator, alto_context.clone()),
     })
 }

@@ -21,7 +21,7 @@ mod sdl2_utils;
 pub mod alto_utils;
 pub mod prelude;
 
-pub mod resources_cache;
+pub mod resources;
 
 #[macro_use]
 mod common_macros;
@@ -38,9 +38,8 @@ pub use engine::Engine;
 
 pub use sdl2_utils::log_system_info;
 
-pub mod resources;
-
 pub mod font;
+pub mod assets;
 
 const WINDOW_SIZE: (u32, u32) = (800, 600);
 const CLEAR_COLOR: Color = Color {
