@@ -2,8 +2,9 @@ use sdl2::render::Texture;
 use alto::Buffer;
 
 use font::BitmapFont;
+use std::fmt::Debug;
 
-pub trait CacheKey<Target> {
+pub trait CacheKey<Target>: Debug {
     type Target;
 }
 

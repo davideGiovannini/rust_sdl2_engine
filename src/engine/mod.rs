@@ -97,6 +97,15 @@ where
                     game_controller_manager.removed_controller(which as u32)
                 }
                 _ => {
+                    if let Event::KeyUp { scancode, .. } = event {
+                        if let Some(Scancode::F12) = scancode {
+                            #[cfg(debug_assertions)]
+                            {
+                                engine.resources.inspect_window = !engine.resources.inspect_window;
+                            }
+                        }
+                    }
+
                     game_stack.last_mut().unwrap().process_event(&event);
                 }
             }
@@ -125,7 +134,10 @@ where
                 fps_counter.elapsed(),
                 game_controller_manager.snapshot(),
             );
-            let action = game_stack.last_mut().unwrap().logic(&context, &engine, &ui);
+            let action = game_stack
+                .last_mut()
+                .unwrap()
+                .logic(&context, &mut engine, &ui);
             match action {
                 EngineAction::Quit => break 'running,
                 EngineAction::ToggleFullScreen => {
@@ -170,6 +182,11 @@ where
             engine.renderer.clear();
 
             game_stack.last_mut().unwrap().render(&context, &mut engine);
+        }
+
+        if engine.resources.inspect_window {
+            #[cfg(debug_assertions)]
+            engine.resources.inspect(&ui);
         }
         imgui_renderer.render(ui).unwrap();
 

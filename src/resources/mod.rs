@@ -11,6 +11,8 @@ use font::BitmapFont;
 
 use std::sync::Arc;
 
+use imgui::Ui;
+
 mod cache;
 mod load;
 mod keys;
@@ -19,8 +21,8 @@ pub use self::cache::*;
 pub use self::load::*;
 pub use self::keys::*;
 
-
 pub struct Resources {
+    pub inspect_window: bool,
     texture_cache: HashCache<PathKey, Texture>,
     bitmap_font_cache: HashCache<BitmapFontKey, BitmapFont>,
     audio_buffer_cache: HashCache<PathKey, alto::Buffer>,
@@ -34,12 +36,94 @@ impl Resources {
         alto_context: alto::Context,
     ) -> Self {
         Resources {
+            inspect_window: false,
             texture_creator,
             alto_context,
             texture_cache: Default::default(),
             bitmap_font_cache: Default::default(),
             audio_buffer_cache: Default::default(),
         }
+    }
+
+    pub fn inspect(&mut self, ui: &Ui) {
+        use std::mem::size_of;
+
+        let mut opened = self.inspect_window;
+
+        ui.window(im_str!("Resources"))
+            .scrollable(true)
+            .resizable(true)
+            .opened(&mut opened)
+            .build(|| {
+                ui.text(im_str!("Texture cache"));
+                ui.separator();
+
+                let ram_usage = size_of::<Texture>() * self.texture_cache.size();
+                let vram_estimate: usize =
+                    (self.texture_cache.into_iter()).fold(0, |acc, (_, t)| {
+                        let tex_query = t.query();
+
+                        let pixels = tex_query.width * tex_query.height;
+                        let size = tex_query.format.byte_size_of_pixels(pixels as usize);
+
+                        acc + size
+                    });
+
+                ui.text(im_str!(
+                    "Using {} bytes of RAM and {} bytes of VRAM",
+                    ram_usage,
+                    vram_estimate
+                ));
+
+                self.texture_cache.inspect(
+                    ui,
+                    "texture_cache",
+                    |key| key.0.trim_left_matches("./assets/textures/"),
+                    |value| {
+                        let tex_query = value.query();
+
+                        let pixels = tex_query.width * tex_query.height;
+                        tex_query.format.byte_size_of_pixels(pixels as usize)
+                    },
+                );
+                // -----
+                ui.new_line();
+                ui.text(im_str!("Audio cache"));
+                ui.separator();
+
+                let ram_usage = size_of::<Texture>() * self.audio_buffer_cache.size();
+                let ram_estimate: usize = (self.audio_buffer_cache.into_iter())
+                    .fold(0, |acc, (_, buffer)| acc + buffer.size() as usize);
+
+                ui.text(im_str!("Using {} bytes of RAM ", ram_usage + ram_estimate));
+
+                self.audio_buffer_cache.inspect(
+                    ui,
+                    "audio_buffer_cache",
+                    |key| key.0.trim_left_matches("./assets/sounds/"),
+                    |value| value.size() as usize,
+                );
+
+                // -----
+                ui.new_line();
+                ui.text(im_str!("Font cache cache"));
+                ui.separator();
+
+                let ram_usage = size_of::<Texture>() * self.bitmap_font_cache.size();
+                let ram_estimate: usize = (self.bitmap_font_cache.into_iter())
+                    .fold(0, |acc, (_, buffer)| acc + 4 as usize);
+
+                ui.text(im_str!("Using {} bytes of RAM ", ram_usage + ram_estimate));
+
+                self.bitmap_font_cache.inspect(
+                    ui,
+                    "bitmap_font_cache",
+                    |key| key.0.trim_left_matches("./assets/fonts/"),
+                    |value| 3,
+                );
+            });
+
+        self.inspect_window = opened;
     }
 
     pub fn default_pixel_format(&self) -> PixelFormatEnum {
@@ -132,6 +216,13 @@ impl Cache<PathKey, Texture> for Resources {
     fn clear(&mut self) {
         self.texture_cache.clear();
     }
+
+    fn size(&self) -> usize {
+        self.texture_cache.size()
+    }
+    fn drop_unused(&mut self) {
+        self.texture_cache.drop_unused()
+    }
 }
 
 impl LoadCache<BitmapFontKey, BitmapFont> for Resources {}
@@ -162,6 +253,13 @@ impl Cache<BitmapFontKey, BitmapFont> for Resources {
     fn clear(&mut self) {
         self.bitmap_font_cache.clear();
     }
+
+    fn size(&self) -> usize {
+        self.bitmap_font_cache.size()
+    }
+    fn drop_unused(&mut self) {
+        self.texture_cache.drop_unused()
+    }
 }
 
 impl LoadCache<PathKey, alto::Buffer> for Resources {}
@@ -189,5 +287,12 @@ impl Cache<PathKey, alto::Buffer> for Resources {
 
     fn clear(&mut self) {
         self.audio_buffer_cache.clear();
+    }
+
+    fn size(&self) -> usize {
+        self.audio_buffer_cache.size()
+    }
+    fn drop_unused(&mut self) {
+        self.texture_cache.drop_unused()
     }
 }
