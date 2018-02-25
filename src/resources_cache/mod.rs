@@ -1,12 +1,13 @@
 use sdl2::render::{Texture, TextureCreator};
 use sdl2::video::WindowContext;
 use alto;
+use alto_utils::load_buffer_from_ogg_file;
 
 use sdl2::image::LoadTexture;
 
 use font::BitmapFont;
 
-use std::rc::Rc;
+use std::sync::Arc;
 
 mod cache;
 mod load;
@@ -19,8 +20,9 @@ pub use self::keys::*;
 pub struct Resources {
     texture_cache: HashCache<PathKey, Texture>,
     bitmap_font_cache: HashCache<BitmapFontKey, BitmapFont>,
+    audio_buffer_cache: HashCache<PathKey, alto::Buffer>,
     texture_creator: TextureCreator<WindowContext>,
-    alto_context: alto::Context, // TODO Check that it is ok to clone this (are they the same context?)
+    alto_context: alto::Context,
 }
 
 impl Resources {
@@ -33,6 +35,7 @@ impl Resources {
             alto_context,
             texture_cache: Default::default(),
             bitmap_font_cache: Default::default(),
+            audio_buffer_cache: Default::default(),
         }
     }
 }
@@ -48,15 +51,15 @@ impl Loader<PathKey, Texture> for Resources {
 }
 
 impl Cache<PathKey, Texture> for Resources {
-    fn get(&self, key: &PathKey) -> Option<Rc<Texture>> {
+    fn get(&self, key: &PathKey) -> Option<Arc<Texture>> {
         self.texture_cache.get(key)
     }
 
-    fn insert(&mut self, key: PathKey, value: Texture) -> Option<Rc<Texture>> {
+    fn insert(&mut self, key: PathKey, value: Texture) -> Option<Arc<Texture>> {
         self.texture_cache.insert(key, value)
     }
 
-    fn remove(&mut self, key: &PathKey) -> Option<Rc<Texture>> {
+    fn remove(&mut self, key: &PathKey) -> Option<Arc<Texture>> {
         self.texture_cache.remove(key)
     }
 
@@ -78,19 +81,47 @@ impl Loader<BitmapFontKey, BitmapFont> for Resources {
 }
 
 impl Cache<BitmapFontKey, BitmapFont> for Resources {
-    fn get(&self, key: &BitmapFontKey) -> Option<Rc<BitmapFont>> {
+    fn get(&self, key: &BitmapFontKey) -> Option<Arc<BitmapFont>> {
         self.bitmap_font_cache.get(key)
     }
 
-    fn insert(&mut self, key: BitmapFontKey, value: BitmapFont) -> Option<Rc<BitmapFont>> {
+    fn insert(&mut self, key: BitmapFontKey, value: BitmapFont) -> Option<Arc<BitmapFont>> {
         self.bitmap_font_cache.insert(key, value)
     }
 
-    fn remove(&mut self, key: &BitmapFontKey) -> Option<Rc<BitmapFont>> {
+    fn remove(&mut self, key: &BitmapFontKey) -> Option<Arc<BitmapFont>> {
         self.bitmap_font_cache.remove(key)
     }
 
     fn clear(&mut self) {
         self.bitmap_font_cache.clear();
+    }
+}
+
+impl LoadCache<PathKey, alto::Buffer> for Resources {}
+
+impl Loader<PathKey, alto::Buffer> for Resources {
+    type Error = String;
+
+    fn load_resource(&self, key: &PathKey) -> Result<alto::Buffer, Self::Error> {
+        load_buffer_from_ogg_file(&key.0, &self.alto_context).map_err(|e| format!("{}", e))
+    }
+}
+
+impl Cache<PathKey, alto::Buffer> for Resources {
+    fn get(&self, key: &PathKey) -> Option<Arc<alto::Buffer>> {
+        self.audio_buffer_cache.get(key)
+    }
+
+    fn insert(&mut self, key: PathKey, value: alto::Buffer) -> Option<Arc<alto::Buffer>> {
+        self.audio_buffer_cache.insert(key, value)
+    }
+
+    fn remove(&mut self, key: &PathKey) -> Option<Arc<alto::Buffer>> {
+        self.audio_buffer_cache.remove(key)
+    }
+
+    fn clear(&mut self) {
+        self.audio_buffer_cache.clear();
     }
 }

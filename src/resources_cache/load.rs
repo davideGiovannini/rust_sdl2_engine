@@ -1,7 +1,7 @@
 use super::*;
 use std::hash::Hash;
 
-use std::rc::Rc;
+use std::sync::Arc;
 
 pub trait Loader<K, T>
 where
@@ -16,7 +16,7 @@ pub trait LoadCache<K, V>: Loader<K, V> + Cache<K, V>
 where
     K: CacheKey<V> + Hash + Eq + Clone,
 {
-    fn get_or_load(&mut self, key: &K) -> Result<Rc<V>, Self::Error> {
+    fn get_or_load(&mut self, key: &K) -> Result<Arc<V>, Self::Error> {
         if let Some(value) = self.get(key) {
             return Ok(value);
         }
