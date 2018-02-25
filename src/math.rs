@@ -9,10 +9,10 @@ pub fn lerp_pos(pos0: (i32, i32), pos1: (i32, i32), t: f32) -> (i32, i32) {
 
 pub fn lerp_color(color0: (u8, u8, u8, u8), color1: (u8, u8, u8, u8), t: f32) -> (u8, u8, u8, u8) {
     (
-        lerp(color0.0 as i32, color1.0 as i32, t) as u8,
-        lerp(color0.1 as i32, color1.1 as i32, t) as u8,
-        lerp(color0.2 as i32, color1.2 as i32, t) as u8,
-        lerp(color0.3 as i32, color1.3 as i32, t) as u8,
+        lerp(i32::from(color0.0), i32::from(color1.0), t) as u8,
+        lerp(i32::from(color0.1), i32::from(color1.1), t) as u8,
+        lerp(i32::from(color0.2), i32::from(color1.2), t) as u8,
+        lerp(i32::from(color0.3), i32::from(color1.3), t) as u8,
     )
 }
 
