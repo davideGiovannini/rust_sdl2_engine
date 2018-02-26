@@ -13,6 +13,11 @@ use std::sync::Arc;
 
 use imgui::Ui;
 
+use notify::{DebouncedEvent, RecommendedWatcher, RecursiveMode, Watcher};
+use std::sync::mpsc::channel;
+use std::sync::mpsc::Receiver;
+use std::time::Duration;
+
 mod cache;
 mod load;
 mod keys;
@@ -28,6 +33,8 @@ pub struct Resources {
     audio_buffer_cache: HashCache<PathKey, alto::Buffer>,
     texture_creator: TextureCreator<WindowContext>,
     alto_context: alto::Context,
+    watcher: RecommendedWatcher,
+    receiver: Receiver<DebouncedEvent>,
 }
 
 impl Resources {
@@ -35,6 +42,16 @@ impl Resources {
         texture_creator: TextureCreator<WindowContext>,
         alto_context: alto::Context,
     ) -> Self {
+        let (tx, receiver) = channel();
+
+        // Automatically select the best implementation for your platform.
+        // You can also access each implementation directly e.g. INotifyWatcher.
+        let mut watcher: RecommendedWatcher = Watcher::new(tx, Duration::from_millis(500)).unwrap();
+
+        // Add a path to be watched. All files and directories at that path and
+        // below will be monitored for changes.
+        watcher.watch("assets", RecursiveMode::Recursive).unwrap();
+
         Resources {
             inspect_window: false,
             texture_creator,
@@ -42,7 +59,55 @@ impl Resources {
             texture_cache: Default::default(),
             bitmap_font_cache: Default::default(),
             audio_buffer_cache: Default::default(),
+            watcher,
+            receiver,
         }
+    }
+
+    pub fn sync_resources(&mut self) -> Option<PathKey> {
+        match self.receiver.try_recv() {
+            Ok(event) => match event {
+                DebouncedEvent::Write(path) => {
+                    let key: Option<PathKey> = self.texture_cache
+                        .into_iter()
+                        .filter(|&(k, _)| path.ends_with(k.0))
+                        .map(|(ref k, _)| (*k).clone())
+                        .nth(0);
+
+                    if let Some(key) = key {
+                        if let Ok(new_value) = self.load_resource(&key) {
+                            println!("Reloaded {}", key.0);
+                            self.texture_cache.insert(key.clone(), new_value);
+                            return Some(key);
+                        } else {
+                            println!("Error during reloading {}", key.0);
+                        }
+                    }
+
+                    // Same for audio
+
+                    let key: Option<PathKey> = self.audio_buffer_cache
+                        .into_iter()
+                        .filter(|&(k, _)| path.ends_with(k.0))
+                        .map(|(ref k, _)| (*k).clone())
+                        .nth(0);
+
+                    if let Some(key) = key {
+                        if let Ok(new_value) = self.load_resource(&key) {
+                            println!("Reloaded {}", key.0);
+                            self.audio_buffer_cache.insert(key.clone(), new_value);
+                            return Some(key);
+                        } else {
+                            println!("Error during reloading {}", key.0);
+                        }
+                    }
+
+                }
+                _ => {}
+            },
+            _ => {}
+        }
+        None
     }
 
     pub fn inspect(&mut self, ui: &Ui) {
@@ -86,7 +151,7 @@ impl Resources {
                 self.texture_cache.inspect(
                     ui,
                     "texture_cache",
-                    |key| key.0.trim_left_matches("./assets/textures/"),
+                    |key| key.0.trim_left_matches("assets/textures/"),
                     |value| {
                         let tex_query = value.query();
 
@@ -114,7 +179,7 @@ impl Resources {
                 self.audio_buffer_cache.inspect(
                     ui,
                     "audio_buffer_cache",
-                    |key| key.0.trim_left_matches("./assets/sounds/"),
+                    |key| key.0.trim_left_matches("assets/sounds/"),
                     |value| value.size() as usize,
                 );
 
@@ -143,7 +208,7 @@ impl Resources {
                 self.bitmap_font_cache.inspect(
                     ui,
                     "bitmap_font_cache",
-                    |key| key.0.trim_left_matches("./assets/fonts/"),
+                    |key| key.0.trim_left_matches("assets/fonts/"),
                     |value| value.vram_size(),
                 );
             });

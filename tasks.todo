@@ -1,0 +1,11 @@
+
+* [] finish adding resource reloading through notify
+    try it by making games asks at each frame a new Arc from the cache (at least in cfg(debug))
+
+  * [x] reloading for audio buffer
+     * [] find a nice way to refactor similar code for this
+  * [] improve error handling inside sync_resources
+  * [] add methods to enable/disable resource hot load (with options in the game engine builder)
+  * [] live reloading for fonts
+
+  * [] generic cache with reloading ?

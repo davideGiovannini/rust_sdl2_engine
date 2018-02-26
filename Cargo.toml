@@ -14,6 +14,7 @@ imgui = { git = 'https://github.com/davideGiovannini/imgui-rs' }
 alto = "3.0.1"
 lewton = "0.8.0"
 failure = "0.1.1"
+notify = "4.0.3"
 
 [dependencies.sdl2]
 default-features = false

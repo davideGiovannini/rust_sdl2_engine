@@ -1,10 +1,10 @@
 extern crate gl;
 pub extern crate sdl2;
 
-extern crate failure;
-
 pub extern crate alto;
+extern crate failure;
 pub extern crate lewton;
+extern crate notify;
 
 #[macro_use]
 pub extern crate imgui;

@@ -64,7 +64,7 @@ fn generate_texture_keys_consts() -> std::io::Result<()> {
     for f in names {
         file.write_all(
             format!(
-                "pub const TEX_{}: PathKey = PathKey(\"./assets/textures/{}\");\n",
+                "pub const TEX_{}: PathKey = PathKey(\"assets/textures/{}\");\n",
                 f.trim_right_matches(".png").to_uppercase(),
                 f,
             ).as_bytes(),
@@ -99,7 +99,7 @@ fn generate_audio_buffer_consts() -> std::io::Result<()> {
     for f in names {
         file.write_all(
             format!(
-                "pub const AUDIO_{}: PathKey = PathKey(\"./assets/sounds/{}\");\n",
+                "pub const AUDIO_{}: PathKey = PathKey(\"assets/sounds/{}\");\n",
                 f.trim_right_matches(".ogg").to_uppercase(),
                 f,
             ).as_bytes(),

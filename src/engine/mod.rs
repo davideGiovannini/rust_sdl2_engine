@@ -111,6 +111,13 @@ where
             }
         }
 
+        if let Some(key) = engine.resources.sync_resources() {
+            game_stack
+                .last_mut()
+                .unwrap()
+                .on_cache_updated(&mut engine, key);
+        }
+
         imgui_backend::process_event_state(&mut imgui, &engine.event_pump);
 
         let size_points = engine.renderer.window().size();
