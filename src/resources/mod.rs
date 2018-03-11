@@ -38,6 +38,17 @@ pub struct Resources {
 }
 
 impl Resources {
+    #[cfg(debug_assertions)]
+    fn init_assets_folder() {
+        use std::path::Path;
+        use std::fs;
+
+        let asset_folder: &Path = Path::new("./assets");
+        if !asset_folder.exists() {
+            fs::create_dir(asset_folder);
+        }
+    }
+
     pub fn new(
         texture_creator: TextureCreator<WindowContext>,
         alto_context: alto::Context,
@@ -47,6 +58,9 @@ impl Resources {
         // Automatically select the best implementation for your platform.
         // You can also access each implementation directly e.g. INotifyWatcher.
         let mut watcher: RecommendedWatcher = Watcher::new(tx, Duration::from_millis(500)).unwrap();
+
+        #[cfg(debug_assertions)]
+        Resources::init_assets_folder();
 
         // Add a path to be watched. All files and directories at that path and
         // below will be monitored for changes.
@@ -101,7 +115,6 @@ impl Resources {
                             println!("Error during reloading {}", key.0);
                         }
                     }
-
                 }
                 _ => {}
             },
