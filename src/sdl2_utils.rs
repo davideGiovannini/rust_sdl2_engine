@@ -73,7 +73,13 @@ pub fn initialize_engine(
 
     let texture_creator = renderer.texture_creator();
 
-    make_engine(renderer, texture_creator, ttf_context, event_pump)
+    make_engine(
+        sdl_context,
+        renderer,
+        texture_creator,
+        ttf_context,
+        event_pump,
+    )
 }
 
 pub fn log_system_info() -> String {

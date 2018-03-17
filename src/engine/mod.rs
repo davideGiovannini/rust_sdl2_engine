@@ -8,8 +8,10 @@ use failure::{err_msg, Error};
 
 use sdl2::ttf::Sdl2TtfContext;
 use sdl2::event::Event;
+use sdl2::mouse::MouseState;
 use sdl2::render::{TextureCreator, WindowCanvas};
 use sdl2::video::WindowContext;
+use sdl2::Sdl;
 use std::collections::HashSet;
 use sdl2::keyboard::Scancode;
 use sdl2::EventPump;
@@ -29,6 +31,7 @@ use imgui_backend;
 use opengl::log_messages;
 
 pub struct Engine {
+    sdl2_context: Sdl,
     pub renderer: WindowCanvas,
     pub ttf_context: Sdl2TtfContext,
     pub resources: Resources,
@@ -71,6 +74,10 @@ where
     let mut keys_down: HashSet<Scancode> = Default::default();
 
     engine.clear_color = options.clear_color;
+
+    let mouse = engine.sdl2_context.mouse();
+    mouse.show_cursor(!options.hide_cursor);
+    mouse.set_relative_mouse_mode(options.relative_cursor);
 
     'running: loop {
         let (should_wait, maybe_fps, delta_time) = fps_counter.tick();
@@ -139,6 +146,7 @@ where
                 newly_pressed,
                 delta_time,
                 fps_counter.elapsed(),
+                MouseState::new(&engine.event_pump),
                 game_controller_manager.snapshot(),
             );
             let action = game_stack
@@ -207,6 +215,7 @@ where
 }
 
 pub fn make_engine(
+    sdl2_context: Sdl,
     renderer: WindowCanvas,
     texture_creator: TextureCreator<WindowContext>,
     ttf_context: Sdl2TtfContext,
@@ -215,6 +224,7 @@ pub fn make_engine(
     let alto_context = super::alto_utils::initialize_context()?;
 
     Ok(Engine {
+        sdl2_context,
         renderer,
         ttf_context,
         event_pump,

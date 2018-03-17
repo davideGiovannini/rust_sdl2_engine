@@ -9,7 +9,7 @@
   * [] live reloading for fonts
 
   * [] generic cache with reloading ?
-
+  * [] better mouse support
 
 * Crates to try
   num   noisy_float  smallvec
