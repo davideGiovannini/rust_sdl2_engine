@@ -59,6 +59,7 @@ fn generate_texture_keys_consts() -> std::io::Result<()> {
     let names: Vec<String> = std::fs::read_dir(assets)
         .expect("Can't read assets/textures dir")
         .map(|x| x.unwrap().file_name().into_string().unwrap())
+        .filter(|x| x.ends_with(".png"))
         .collect();
 
     for f in names {
@@ -94,6 +95,7 @@ fn generate_audio_buffer_consts() -> std::io::Result<()> {
     let names: Vec<String> = std::fs::read_dir(assets)
         .expect("Can't read assets/sounds dir")
         .map(|x| x.unwrap().file_name().into_string().unwrap())
+        .filter(|x| x.ends_with(".ogg"))
         .collect();
 
     for f in names {
