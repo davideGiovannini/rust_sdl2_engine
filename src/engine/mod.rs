@@ -54,6 +54,8 @@ where
         options.logical_size,
     )?;
 
+    engine.clear_color = options.clear_color;
+
     let mut imgui = ImGui::init();
     imgui_backend::configure_keys(&mut imgui);
     imgui.set_font_global_scale(options.imgui_font_scale);
@@ -72,8 +74,6 @@ where
     let mut game_stack = vec![game];
 
     let mut keys_down: HashSet<Scancode> = Default::default();
-
-    engine.clear_color = options.clear_color;
 
     let mouse = engine.sdl2_context.mouse();
     mouse.show_cursor(!options.hide_cursor);
