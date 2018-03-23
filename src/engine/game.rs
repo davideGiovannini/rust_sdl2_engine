@@ -15,7 +15,7 @@ pub trait GameScene {
 
     fn logic(&mut self, context: &EngineContext, engine: &mut Engine, ui: &Ui) -> EngineAction;
 
-    fn render(&mut self, context: &EngineContext, engine: &mut Engine);
+    fn render(&mut self, context: &EngineContext, engine: &mut Engine, ui: &Ui);
 
     #[allow(unused)]
     fn on_cache_updated(&mut self, engine: &mut Engine, key: PathKey) {}

@@ -1,6 +1,7 @@
 pub mod action;
 pub mod context;
 pub mod game;
+use debug;
 
 use alto;
 
@@ -79,15 +80,15 @@ where
     mouse.show_cursor(!options.hide_cursor);
     mouse.set_relative_mouse_mode(options.relative_cursor);
 
+    let mut debug_stats: debug::DebugStats = Default::default();
+
     'running: loop {
         let (should_wait, maybe_fps, delta_time) = fps_counter.tick();
         if should_wait {
             continue;
         }
         if let Some(fps) = maybe_fps {
-            let window = engine.renderer.window_mut();
-            let title = format!("{}: {} fps", options.window_title, fps);
-            window.set_title(&title)?;
+            debug_stats.insert_fps(fps);
         }
 
         // EVENT HANDLING
@@ -105,11 +106,13 @@ where
                 }
                 _ => {
                     if let Event::KeyUp { scancode, .. } = event {
-                        if let Some(Scancode::F12) = scancode {
-                            #[cfg(debug_assertions)]
-                            {
+                        #[cfg(debug_assertions)]
+                        match scancode {
+                            Some(Scancode::F12) => {
                                 engine.resources.inspect_window = !engine.resources.inspect_window;
                             }
+                            Some(Scancode::F11) => debug_stats.toggle(),
+                            _ => {}
                         }
                     }
 
@@ -192,16 +195,23 @@ where
                 _ => {}
             }
 
+            #[cfg(debug_assertions)]
+            {
+                if engine.resources.inspect_window {
+                    #[cfg(debug_assertions)]
+                    engine.resources.inspect(&ui);
+                }
+                debug_stats.imgui_render_stats(&ui);
+            }
+
             // RENDERING
             engine.renderer.set_draw_color(engine.clear_color);
             engine.renderer.clear();
 
-            game_stack.last_mut().unwrap().render(&context, &mut engine);
-        }
-
-        if engine.resources.inspect_window {
-            #[cfg(debug_assertions)]
-            engine.resources.inspect(&ui);
+            game_stack
+                .last_mut()
+                .unwrap()
+                .render(&context, &mut engine, &ui);
         }
         imgui_renderer.render(ui).unwrap();
 

@@ -22,6 +22,7 @@ pub mod alto_utils;
 pub mod prelude;
 
 pub mod resources;
+mod debug;
 
 #[macro_use]
 mod common_macros;
