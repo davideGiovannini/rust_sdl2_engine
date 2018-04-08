@@ -38,6 +38,7 @@ pub struct Engine {
     pub resources: Resources,
     pub alto_context: alto::Context,
     pub clear_color: Color,
+    pub imgui_draw_cursor: bool,
     event_pump: EventPump,
 }
 
@@ -129,6 +130,7 @@ where
         }
 
         imgui_backend::process_event_state(&mut imgui, &engine.event_pump);
+        imgui.set_mouse_draw_cursor(engine.imgui_draw_cursor);
 
         let size_points = engine.renderer.window().size();
         let size_pixels = engine.renderer.window().drawable_size();
@@ -240,6 +242,7 @@ pub fn make_engine(
         event_pump,
         alto_context: alto_context.clone(),
         clear_color: Color::RGB(0, 0, 0),
+        imgui_draw_cursor: false,
         resources: Resources::new(texture_creator, alto_context.clone()),
     })
 }
