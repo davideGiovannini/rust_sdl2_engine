@@ -76,6 +76,20 @@ impl BitmapFont {
         }
     }
 
+    pub fn render_text_from_right(
+        &self,
+        text: &str,
+        point: (i32, i32),
+        renderer: &mut WindowCanvas,
+    ) {
+        let width = (self.char_width) as usize;
+        self.render_text(
+            text,
+            (point.0 - (text.len() * width) as i32, point.1),
+            renderer,
+        )
+    }
+
     // TODO add other functions (to print text centered or right aligned)
 
     pub fn render_text_centered(&self, text: &str, point: (i32, i32), renderer: &mut WindowCanvas) {
