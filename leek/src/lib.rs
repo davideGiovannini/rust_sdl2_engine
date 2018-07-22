@@ -1,3 +1,31 @@
+//! The following code creates an empty window:
+//! ```
+//! fn main() {
+//!   Engine::new("Title").start::<Game>();
+//! }
+//!
+//!
+//! struct Game;
+//!
+//! impl GameScene for Game {
+//!   fn set_up(&mut self) {}
+//!
+//!   fn logic(&mut self, context: &EngineContext, engine: &mut Engine, ui: &Ui) -> EngineAction {
+//!       EngineAction::default()
+//!   }
+//!
+//!   fn render(&mut self, context: &EngineContext, engine: &mut Engine, ui: &Ui) {}
+//! }
+//!
+//! impl FromEngine for Game {
+//!     fn init(engine: &mut Engine) -> Self {
+//!         Game{}
+//!     }
+//! }
+//!
+//! ```
+//! Update Game struct with your desired field :)
+//!
 extern crate gl;
 pub extern crate sdl2;
 
@@ -60,6 +88,7 @@ pub struct EngineBuilder<'window> {
     clear_color: Color,
     imgui_font_scale: f32,
 }
+
 
 impl Engine {
     pub fn new(window_title: &str) -> EngineBuilder {
