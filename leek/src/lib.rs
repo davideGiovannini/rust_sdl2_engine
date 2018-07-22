@@ -39,18 +39,18 @@ pub extern crate imgui;
 
 use sdl2::pixels::Color;
 
+pub mod alto_utils;
 mod engine;
 mod fps_counter;
 mod game_controllers;
-mod opengl;
 mod imgui_backend;
+mod opengl;
 mod post_processing;
-mod sdl2_utils;
-pub mod alto_utils;
 pub mod prelude;
+mod sdl2_utils;
 
-pub mod resources;
 mod debug;
+pub mod resources;
 
 #[macro_use]
 mod common_macros;
@@ -61,8 +61,8 @@ pub mod math;
 pub use engine::game::{AnyGameScene, FromEngine, GameScene};
 pub use game_controllers::{GameController, GameControllerManager};
 
-pub use engine::context::EngineContext;
 pub use engine::action::EngineAction;
+pub use engine::context::EngineContext;
 pub use engine::Engine;
 
 pub use sdl2_utils::log_system_info;
@@ -87,7 +87,6 @@ pub struct EngineBuilder<'window> {
     clear_color: Color,
     imgui_font_scale: f32,
 }
-
 
 impl Engine {
     pub fn new(window_title: &str) -> EngineBuilder {

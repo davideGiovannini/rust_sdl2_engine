@@ -1,5 +1,5 @@
-use sdl2::render::{Texture, WindowCanvas};
 use sdl2::rect::Rect;
+use sdl2::render::{Texture, WindowCanvas};
 
 pub struct BitmapFont {
     texture: Texture,
@@ -27,8 +27,8 @@ impl BitmapFont {
 
     pub fn set_color(&self, red: u8, green: u8, blue: u8) {
         unsafe {
-            use sdl2::sys;
             use sdl2::get_error;
+            use sdl2::sys;
 
             let raw = self.texture.raw();
             let ret = sys::SDL_SetTextureColorMod(raw, red, green, blue);

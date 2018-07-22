@@ -1,6 +1,6 @@
 #![allow(unused)]
-use gl::types::*;
 use gl;
+use gl::types::*;
 
 #[derive(Clone, Copy, Debug)]
 pub enum Type {

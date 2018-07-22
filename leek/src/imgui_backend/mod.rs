@@ -5,9 +5,9 @@ use opengl::*;
 mod input;
 pub use self::input::*;
 
-use std::mem;
 use gl;
 use gl::types::GLuint;
+use std::mem;
 
 const VERTEX_SIZE: usize = mem::size_of::<ImDrawVert>();
 const INDEX_SIZE: usize = mem::size_of::<ImDrawIdx>();

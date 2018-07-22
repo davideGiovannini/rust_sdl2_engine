@@ -1,8 +1,8 @@
+use sdl2::image::LoadTexture;
+use sdl2::pixels::PixelFormatEnum;
 use sdl2::render::{Texture, TextureAccess, TextureCreator, TextureValueError};
 use sdl2::surface::SurfaceRef;
 use sdl2::video::WindowContext;
-use sdl2::pixels::PixelFormatEnum;
-use sdl2::image::LoadTexture;
 
 use alto;
 use alto_utils::load_buffer_from_ogg_file;
@@ -19,12 +19,12 @@ use std::sync::mpsc::Receiver;
 use std::time::Duration;
 
 mod cache;
-mod load;
 mod keys;
+mod load;
 
 pub use self::cache::*;
-pub use self::load::*;
 pub use self::keys::*;
+pub use self::load::*;
 
 pub struct Resources {
     pub inspect_window: bool,
@@ -40,12 +40,22 @@ pub struct Resources {
 impl Resources {
     #[cfg(debug_assertions)]
     fn init_assets_folder() {
-        use std::path::Path;
         use std::fs;
+        use std::path::Path;
 
         let asset_folder: &Path = Path::new("./assets");
         if !asset_folder.exists() {
             fs::create_dir(asset_folder);
+        }
+
+        let textures_folder: &Path = Path::new("./assets/textures");
+        if !textures_folder.exists() {
+            fs::create_dir(textures_folder);
+        }
+
+        let sounds_folder: &Path = Path::new("./assets/sounds");
+        if !sounds_folder.exists() {
+            fs::create_dir(sounds_folder);
         }
     }
 
@@ -124,8 +134,8 @@ impl Resources {
     }
 
     pub fn inspect(&mut self, ui: &Ui) {
-        use std::mem::size_of;
         use math::format_bytes;
+        use std::mem::size_of;
 
         let mut opened = self.inspect_window;
 

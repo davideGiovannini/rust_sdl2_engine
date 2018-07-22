@@ -1,27 +1,27 @@
 #![allow(unused)]
 
-use sdl2::sys::SDL_GameController;
-use sdl2::sys::SDL_Joystick;
-use sdl2::sys::SDL_HapticClose;
-use sdl2::sys::SDL_GameControllerClose;
-use sdl2::sys::SDL_JoystickOpen;
-use sdl2::sys::SDL_HapticRumbleInit;
-use sdl2::sys::SDL_IsGameController;
-use sdl2::sys::SDL_GameControllerOpen;
-use sdl2::sys::SDL_NumJoysticks;
-use sdl2::sys::SDL_JoystickClose;
-use sdl2::sys::SDL_HapticRumblePlay;
-use sdl2::sys::SDL_Haptic;
-use sdl2::sys::SDL_GameControllerGetButton;
-use sdl2::sys::SDL_JoystickIsHaptic;
-use sdl2::sys::SDL_GameControllerGetJoystick;
-use sdl2::sys::SDL_JoystickInstanceID;
-use sdl2::sys::SDL_GameControllerAxis;
-use sdl2::sys::SDL_GameControllerGetAxis;
-use sdl2::sys::SDL_bool;
-use sdl2::sys::SDL_GameControllerButton;
-use sdl2::sys::SDL_HapticOpenFromJoystick;
 use sdl2::sys;
+use sdl2::sys::SDL_GameController;
+use sdl2::sys::SDL_GameControllerAxis;
+use sdl2::sys::SDL_GameControllerButton;
+use sdl2::sys::SDL_GameControllerClose;
+use sdl2::sys::SDL_GameControllerGetAxis;
+use sdl2::sys::SDL_GameControllerGetButton;
+use sdl2::sys::SDL_GameControllerGetJoystick;
+use sdl2::sys::SDL_GameControllerOpen;
+use sdl2::sys::SDL_Haptic;
+use sdl2::sys::SDL_HapticClose;
+use sdl2::sys::SDL_HapticOpenFromJoystick;
+use sdl2::sys::SDL_HapticRumbleInit;
+use sdl2::sys::SDL_HapticRumblePlay;
+use sdl2::sys::SDL_IsGameController;
+use sdl2::sys::SDL_Joystick;
+use sdl2::sys::SDL_JoystickClose;
+use sdl2::sys::SDL_JoystickInstanceID;
+use sdl2::sys::SDL_JoystickIsHaptic;
+use sdl2::sys::SDL_JoystickOpen;
+use sdl2::sys::SDL_NumJoysticks;
+use sdl2::sys::SDL_bool;
 
 use sdl2::controller::{Axis, Button};
 

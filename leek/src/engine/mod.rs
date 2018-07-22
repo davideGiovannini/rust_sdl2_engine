@@ -7,16 +7,16 @@ use alto;
 
 use failure::{err_msg, Error};
 
-use sdl2::ttf::Sdl2TtfContext;
 use sdl2::event::Event;
+use sdl2::keyboard::Scancode;
 use sdl2::mouse::MouseState;
+use sdl2::pixels::Color;
 use sdl2::render::{TextureCreator, WindowCanvas};
+use sdl2::ttf::Sdl2TtfContext;
 use sdl2::video::WindowContext;
+use sdl2::EventPump;
 use sdl2::Sdl;
 use std::collections::HashSet;
-use sdl2::keyboard::Scancode;
-use sdl2::EventPump;
-use sdl2::pixels::Color;
 
 use {AnyGameScene, EngineAction, EngineBuilder, EngineContext, FromEngine, GameScene};
 

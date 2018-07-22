@@ -1,5 +1,5 @@
-use std::time::{Duration, Instant};
 use std::thread;
+use std::time::{Duration, Instant};
 
 const INTERVAL: u64 = 1_000 / 60;
 

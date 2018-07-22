@@ -4,18 +4,18 @@ use gl::types::GLfloat;
 
 use std::mem;
 
+mod enums;
 mod shader;
+mod state;
+mod texture;
 mod vertex_attrib;
 mod vertex_buffer;
-mod texture;
-mod state;
-mod enums;
 pub use self::enums::*;
 pub use self::shader::*;
+pub use self::state::*;
+pub use self::texture::*;
 pub use self::vertex_attrib::*;
 pub use self::vertex_buffer::*;
-pub use self::texture::*;
-pub use self::state::*;
 
 pub const GL_FLOAT_SIZE: usize = mem::size_of::<GLfloat>();
 
@@ -30,8 +30,8 @@ pub fn find_sdl_gl_driver() -> Option<u32> {
 
 pub fn log_messages() {
     unsafe {
-        use std::ffi;
         use gl;
+        use std::ffi;
 
         let num_msgs = 1;
         let mut max_msg_len = 0;

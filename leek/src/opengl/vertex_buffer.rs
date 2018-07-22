@@ -4,8 +4,8 @@
 use gl;
 use gl::types::*;
 
-use std::ptr;
 use std::os::raw::c_void;
+use std::ptr;
 
 unsafe fn initialize_empty_buffer(gl_type: u32) -> GLuint {
     let mut loc: GLuint = 0;

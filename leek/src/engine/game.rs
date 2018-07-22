@@ -1,7 +1,7 @@
 use {Engine, EngineAction, EngineContext};
 
-use sdl2::event::Event;
 use imgui::Ui;
+use sdl2::event::Event;
 
 use resources::PathKey;
 

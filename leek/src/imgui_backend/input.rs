@@ -1,8 +1,8 @@
-use imgui::ImGuiKey;
 use imgui::ImGui;
-use sdl2::EventPump;
+use imgui::ImGuiKey;
 use sdl2::event::Event;
 use sdl2::mouse::MouseButton;
+use sdl2::EventPump;
 use std::os::raw::c_void;
 
 pub fn configure_keys(imgui: &mut ImGui) {

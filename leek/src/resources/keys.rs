@@ -1,5 +1,5 @@
-use sdl2::render::Texture;
 use alto::Buffer;
+use sdl2::render::Texture;
 
 use font::BitmapFont;
 use std::fmt::Debug;

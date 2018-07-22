@@ -1,6 +1,6 @@
 use sdl2::keyboard::Scancode;
-use std::collections::{HashMap, HashSet};
 use sdl2::mouse::MouseState;
+use std::collections::{HashMap, HashSet};
 
 use game_controllers::GameController;
 

@@ -1,8 +1,8 @@
 use sdl2;
 use sdl2::image::INIT_PNG; // INIT_JPG
 
-use opengl;
 use gl;
+use opengl;
 
 use engine::make_engine;
 use Engine;
