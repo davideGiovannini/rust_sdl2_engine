@@ -43,3 +43,16 @@ impl EngineContext {
         &self.mouse_state
     }
 }
+
+impl Default for EngineContext {
+    fn default() -> Self {
+        EngineContext {
+            keyboard_down: HashSet::default(),
+            keyboard_pressed: HashSet::default(),
+            mouse_state: MouseState::from_sdl_state(0),
+            elapsed_time: 0,
+            delta_time: 0,
+            controllers: HashMap::default(),
+        }
+    }
+}

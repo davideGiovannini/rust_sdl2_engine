@@ -24,7 +24,7 @@ impl PostProcessEffect {
             let program = Shader::new(vertex_source, fragment_source)?;
 
             let vertex_data: [GLfloat; 16] = [
-                -1.0, -1.0, 0.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, -1.0, 1.0, 0.0, 0.0,
+                -1.0, -1.0, 0.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, -1.0, 1.0, 0.0, 0.0
             ];
             let mut g_vbo: GLuint = 0;
             let mut g_vao: GLuint = 0;
