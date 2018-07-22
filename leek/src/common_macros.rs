@@ -18,3 +18,20 @@ macro_rules! world_with {
           }
     };
 }
+
+
+
+/// Generate an assets module with the keys for audio and texture resources.
+/// (use it with a build.rs and leek_codegen)
+#[macro_export]
+macro_rules! assets_gen {
+    () => {
+
+        mod assets {
+            use leek::resources::PathKey;
+
+            include!(concat!(env!("OUT_DIR"), "/texture_file_keys.rs"));
+            include!(concat!(env!("OUT_DIR"), "/audio_file_keys.rs"));
+        }
+    }
+}

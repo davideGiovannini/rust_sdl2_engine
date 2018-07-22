@@ -68,7 +68,6 @@ pub use engine::Engine;
 pub use sdl2_utils::log_system_info;
 
 pub mod font;
-pub mod assets;
 
 const WINDOW_SIZE: (u32, u32) = (800, 600);
 const CLEAR_COLOR: Color = Color {

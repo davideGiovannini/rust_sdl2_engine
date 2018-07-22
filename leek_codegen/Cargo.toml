@@ -1,0 +1,9 @@
+[package]
+name = "leek_codegen"
+version = "0.1.0"
+authors = ["Davide Giovannini <giovannini.davide90@gmail.com>", "Erinda Jaupaj <erindajaupi@gmail.com>"]
+
+
+[dependencies]
+
+

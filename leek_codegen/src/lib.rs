@@ -1,13 +1,7 @@
 use std::env;
 use std::path::PathBuf;
 
-fn main() {
-    copy_runtimes_libs();
-    generate_texture_keys_consts().unwrap();
-    generate_audio_buffer_consts().unwrap();
-}
-
-fn copy_runtimes_libs() {
+pub fn copy_runtimes_libs() {
     let target = env::var("TARGET").unwrap();
     let mut out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
     let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
@@ -38,13 +32,20 @@ fn copy_runtimes_libs() {
     }
 }
 
-fn generate_texture_keys_consts() -> std::io::Result<()> {
+/// Generate a resource key for every png in `assets/textures` and for every
+/// ogg in `assets/sounds`.
+/// Remember to add `!assets_gen();` in your main.rs to use them
+pub fn generate_assets_keys() -> std::io::Result<()> {
+    generate_texture_keys_consts()?;
+    generate_audio_buffer_consts()
+}
+
+pub fn generate_texture_keys_consts() -> std::io::Result<()> {
     use std::fs::File;
     use std::io::Write;
     use std::path::Path;
     let mut assets = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
 
-    assets.pop();
     assets.push("assets");
     assets.push("textures");
 
@@ -74,13 +75,12 @@ fn generate_texture_keys_consts() -> std::io::Result<()> {
     Ok(())
 }
 
-fn generate_audio_buffer_consts() -> std::io::Result<()> {
+pub fn generate_audio_buffer_consts() -> std::io::Result<()> {
     use std::fs::File;
     use std::io::Write;
     use std::path::Path;
     let mut assets = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
 
-    assets.pop();
     assets.push("assets");
     assets.push("sounds");
 

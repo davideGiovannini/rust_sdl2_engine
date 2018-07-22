@@ -2,4 +2,5 @@
 
 members = [
     "leek",
+    "leek_codegen"
 ]
