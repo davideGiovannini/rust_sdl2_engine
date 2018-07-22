@@ -1,27 +1,5 @@
-[package]
-name = "leek"
-version = "0.1.0"
-authors = ["Davide Giovannini <giovannini.davide90@gmail.com>", "Erinda Jaupaj <erindajaupi@gmail.com>"]
-build = "build.rs"
+[workspace]
 
-
-[dependencies]
-gl = "0.10.0"
-# imgui = "0.0.18"
-# Custom version of imgui-rs to have the ability to set clipboard functions
-imgui = { git = 'https://github.com/davideGiovannini/imgui-rs' }
-
-alto = "3.0.1"
-lewton = "0.8.0"
-failure = "0.1.1"
-notify = "4.0.3"
-
-[dependencies.sdl2]
-default-features = false
-features = [
-    "ttf",
-    "image",
-    "gfx",
-    "unsafe_textures",
+members = [
+    "leek",
 ]
-version = "0.31"
